@@ -9,7 +9,12 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 
+using HLI.Forms.Core.Controls;
 using HLI.Forms.Core.Models;
+#if !DEBUG
+using HLI.Forms.Core.Interfaces;
+using HLI.Forms.Core.Models;
+#endif
 using Xamarin.Forms;
 
 using static HLI.Forms.Core.Constants;
@@ -21,13 +26,13 @@ namespace HLI.Forms.Core.Services
     /// </summary>
     public static class AppService
     {
-        #region Constants
+#region Constants
 
         private const string DebugSeparator = " ********** ";
 
-        #endregion
+#endregion
 
-        #region Public Methods and Operators
+#region Public Methods and Operators
 
         public static void ReportToHockeyApp(string message)
         {

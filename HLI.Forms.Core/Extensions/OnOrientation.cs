@@ -35,15 +35,9 @@ namespace HLI.Forms.Core.Extensions
         /// </summary>
         public VisualElement View
         {
-            get
-            {
-                return (VisualElement)this.GetValue(ViewProperty);
-            }
+            get => (VisualElement)this.GetValue(ViewProperty);
 
-            set
-            {
-                this.SetValue(ViewProperty, value);
-            }
+            set => this.SetValue(ViewProperty, value);
         }
 
         #endregion

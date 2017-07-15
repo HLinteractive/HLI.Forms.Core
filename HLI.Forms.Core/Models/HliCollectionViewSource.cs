@@ -61,10 +61,7 @@ namespace HLI.Forms.Core.Models
         /// </summary>
         public Predicate<T> Filter
         {
-            get
-            {
-                return this.filter;
-            }
+            get => this.filter;
 
             set
             {
@@ -88,10 +85,7 @@ namespace HLI.Forms.Core.Models
         /// </summary>
         public ObservableCollection<T> Source
         {
-            get
-            {
-                return this.source;
-            }
+            get => this.source;
 
             set
             {
@@ -137,15 +131,9 @@ namespace HLI.Forms.Core.Models
         /// </summary>
         protected ObservableCollection<T> View
         {
-            get
-            {
-                return this.view;
-            }
+            get => this.view;
 
-            private set
-            {
-                this.view = value;
-            }
+            private set => this.view = value;
         }
 
         #endregion
@@ -513,15 +501,9 @@ namespace HLI.Forms.Core.Models
         /// </summary>
         event NotifyCollectionChangedEventHandler INotifyCollectionChanged.CollectionChanged
         {
-            add
-            {
-                this.CollectionChanged += value;
-            }
+            add => this.CollectionChanged += value;
 
-            remove
-            {
-                this.CollectionChanged -= value;
-            }
+            remove => this.CollectionChanged -= value;
         }
 
         #endregion
@@ -538,15 +520,9 @@ namespace HLI.Forms.Core.Models
         /// </summary>
         event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged
         {
-            add
-            {
-                this.PropertyChanged += value;
-            }
+            add => this.PropertyChanged += value;
 
-            remove
-            {
-                this.PropertyChanged -= value;
-            }
+            remove => this.PropertyChanged -= value;
         }
 
         /// <summary>

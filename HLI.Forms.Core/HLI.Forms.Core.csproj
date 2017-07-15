@@ -4,7 +4,7 @@
     <Authors>Thomas Hagström, HL Interactive</Authors>
     <Company>HL interactive</Company>
     <GenerateAssemblyConfigurationAttribute>true</GenerateAssemblyConfigurationAttribute>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <Description>Common Xamarin.Forms views, converters, pages and services</Description>
     <Copyright>Copyright © HL Interactive 2017 Stockholm Sweden</Copyright>
     <PackageReleaseNotes>Converted to netstandard/pcl multi-target VS2017</PackageReleaseNotes>
@@ -12,33 +12,24 @@
     <RepositoryUrl>https://github.com/HLinteractive/HLI.Forms.Core.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageProjectUrl>https://github.com/HLinteractive/HLI.Forms.Core</PackageProjectUrl>
-    <TargetFrameworks>net45;netstandard1.4;</TargetFrameworks><!--uap10.0;-->
+    <TargetFrameworks>net45;netstandard1.4;</TargetFrameworks>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
     <DefaultLanguage>en-US</DefaultLanguage>
     <PackageLicenseUrl>https://raw.githubusercontent.com/HLinteractive/HLI.Forms.Core/master/LICENSE</PackageLicenseUrl>
     <PackageTags>xamarin,xamarin.forms,mvvm,controls,views</PackageTags>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+    <Version>1.0.0-beta</Version>
   </PropertyGroup>
-  <!--<PropertyGroup Condition="'$(TargetFramework)' == 'uap10.0'">
-    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
-    <NugetTargetMoniker>UAP,Version=v10.0</NugetTargetMoniker>
-    <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion>10.0.15063.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.15063.0</TargetPlatformMinVersion>
-    <TargetFrameworkIdentifier>.NETCore</TargetFrameworkIdentifier>
-    <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
-    <DefineConstants>$(DefineConstants);WINDOWS_UWP</DefineConstants>
-    <LanguageTargets>$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets</LanguageTargets>
-  </PropertyGroup>-->
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net45|AnyCPU'">
+    <WarningLevel>0</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard1.4|AnyCPU'">
+    <WarningLevel>0</WarningLevel>
+  </PropertyGroup>
   <ItemGroup>
-    <!--<Compile Include="**\*.cs" Exclude="Platforms\**\*.cs;Resources\**\*.cs" />-->
-    <!-- This is here so that the conditionally included files below are all visible in VS -->
     <None Include="Platforms\**\*.cs;Resources\**\*.*" />
     <EmbeddedResource Include="**\*.resx" />
   </ItemGroup>
-  <!--<ItemGroup Condition=" '$(TargetFramework)' != 'net45' ">
-    <PackageReference Include="NETStandard.Library" Version="1.6.1" />
-  </ItemGroup>-->
   <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -56,17 +47,12 @@
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.4' ">
     <Compile Include="Platforms\netstandard1.4\**\*.cs" />
   </ItemGroup>
-  <!--<ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0' ">
-    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform " Version="5.2.2" />
-    <Compile Include="Platforms\uap10.0\**\*.cs" />
-  </ItemGroup>-->
   <ItemGroup>
     <Compile Remove="obj\Debug\**" />
     <EmbeddedResource Remove="obj\Debug\**" />
     <None Remove="obj\Debug\**" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Controls\" />
     <Folder Include="obj\" />
   </ItemGroup>
   <ItemGroup>
