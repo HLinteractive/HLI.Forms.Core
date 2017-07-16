@@ -13,16 +13,28 @@ Common converters such as `BoolToInvertedConverter`and `BytesToImageSourceConver
 ### Extensions
 Common extension methods. You should see this pop up in intellisense on `Application`, `Object`, `Page`, `String`, `View` etc.
 ### Controls
+Pure Xamarin.Forms Views with no platform specific implentation.  
+Import the namespace to start using them:
+
+	<ContentPage 
+	xmlns:hli="clr-namespace:HLI.Forms.Core.Controls;assembly=HLI.Forms.Core">
+	</ContentPage> 
+
 #### HliBarChart
 Creates a simple bar chart from **`ItemsSource`** using **`ValuePath`** and **`LabelPath`** to determine object members to display.
 
-    <hli:HliBarChart ItemsSource="{Binding CostPerWeekItems}" ValuePath="Cost" LabelPath="Week" />
+![Screenshot](https://github.com/HLinteractive/HLI.Forms.Core/Screenshots/HliBarChart.PNG)
+
+    <hli:HliBarChart ItemsSource="{Binding CostPerWeekItems}" ValuePath="Cost" LabelPath="Week" IsPercent="True" BarScale="2" />
 
 #### HliComboBox
 Allows binding a **`Picker`** to an **`ItemsSource`** of objects and using **`DisplayMemberpath`** with **`SelectedValuePath`** 
+Also supports binding the selected object using **`SelectedItem`**.  
 Based on **[bindable picker written by Simon Villiard](https://forums.xamarin.com/discussion/30801/xamarin-forms-bindable-picker)**
 
-    <hli:HliComboBox ItemsSource="CountriesCollection" DisplayMemberpath="Name" SelectedValuePath="IsoCode" />
+![Screenshot](https://github.com/HLinteractive/HLI.Forms.Core/Screenshots/HliComboBox.GIF)
+
+    <hli:HliComboBox ItemsSource="ItemsSource="{Binding Countries}"" DisplayMemberpath="Name" SelectedItem="{Binding SelectedItem, Mode=TwoWay}" />
 
 #### HliFeedbackView
 Displays feedback to the user when a **`HliFeedbackMessage`** is published through **`MessagingCenter`** using hte key **`Constants.FeedbackKeys.Message`**
@@ -54,15 +66,34 @@ Binds **`ItemsSource`** using **`ItemTemplate`**
 Displays **`Text`** as a simple clickable link. Supports **`Command`** and **`ClickedEvent`**
 
 #### HliPlaceholderView
-A view that displays **`PlaceholderView`** when unfocused and **`ModalPage`** when the user is editing using **`Navigation.PushModalAsync`**.
+A view that displays **`UnfocusedView`** when unfocused and **`FocusedPage`** when the user is editing using **`Navigation.PushModalAsync`**.
 
-    <hli:HliPlaceholderView ItemsSource="MyItems">
-    	<hli:HliPlaceholderView.PlaceholderView>
-    		<!-- Unfocused content -->
-    	</hli:HliPlaceholderView.PlaceholderView>
-		<!-- Focused content -->
-    </hli:HliPlaceholderView>
+The `FocusedPage` has a **`CloseButton`** you can customize.
 
+here is also a **`OnClosed`** event and **`ClosedCommand`** you can subscribe to.
+
+![Screenshot](https://github.com/HLinteractive/HLI.Forms.Core/Screenshots/HliPlaceholderlView.GIF)
+
+
+        <hli:HliPlaceholderView>
+            <hli:HliPlaceholderView.UnfocusedView>
+                <Label Text="Read more!"></Label>
+            </hli:HliPlaceholderView.UnfocusedView>
+            
+            <hli:HliPlaceholderView.FocusedPage>
+                <ContentPage BackgroundColor="White" Padding="20">
+                    <Grid BackgroundColor="Gray" Padding="20" HorizontalOptions="Fill" VerticalOptions="Fill">
+                        <ScrollView HorizontalOptions="Fill" VerticalOptions="Fill">
+                            <Label TextColor="White" Margin="10,0,0,0"
+                               HorizontalOptions="Fill" VerticalOptions="Fill"
+                               Text="Odio velit duis! Habitasse mauris scelerisque vel quis, in in? Tristique nisi auctor pulvinar non pellentesque quis nec! Adipiscing urna egestas massa et, enim! Nisi et, pulvinar tristique integer nascetur! Ac cum. Aliquet, dictumst scelerisque. Eu! Ultrices rhoncus ut nec etiam vut, diam placerat sed? Integer ultrices amet sed scelerisque et. Duis adipiscing tincidunt tincidunt turpis, quis diam, placerat quis! In magnis ac in, sed aliquam, sit eu mus habitasse dictumst mattis! Ac nec turpis scelerisque! Velit et. Mid et! Lectus mattis duis porta! Augue risus et augue, diam amet. Ut pellentesque, porta, odio! Adipiscing mauris, sagittis a a augue porttitor, enim pulvinar dapibus? Aenean amet tincidunt et habitasse montes aenean. Scelerisque! Etiam natoque cras duis amet proin lectus in."
+                               LineBreakMode="WordWrap">
+                            </Label>
+                        </ScrollView>
+                    </Grid>
+                </ContentPage>
+            </hli:HliPlaceholderView.FocusedPage>
+        </hli:HliPlaceholderView>
 #### HliOrientatedView
  A view that respons to orientation changes and either display the **`PortraitContent`** or **`LandscapeContent`**
 

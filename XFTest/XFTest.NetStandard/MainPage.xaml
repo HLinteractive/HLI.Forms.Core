@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<TabbedPage xmlns="http://xamarin.com/schemas/2014/forms"
+            xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+            xmlns:local="clr-namespace:XFTest.NetStandard"
+            xmlns:hli="clr-namespace:HLI.Forms.Core.Controls;assembly=HLI.Forms.Core"
+            x:Class="XFTest.NetStandard.MainPage">
+
+    <ContentPage Title="HLi Bar Chart">
+        <ContentPage.BindingContext>
+            <local:MainViewModel></local:MainViewModel>
+        </ContentPage.BindingContext>
+        <StackLayout>
+            <Label Text="Moons / Planet"></Label>
+            <hli:HliBarChart ItemsSource="{Binding Models}" BarScale="3" ValuePath="Moons" LabelPath="Name"></hli:HliBarChart>
+        </StackLayout>
+    </ContentPage>
+    <ContentPage Title="HLi ComboBox">
+        <ContentPage.BindingContext>
+            <local:MainViewModel></local:MainViewModel>
+        </ContentPage.BindingContext>
+
+        <StackLayout>
+            <Label Text="Select planet" FontAttributes="Bold"></Label>
+            <hli:HliComboBox ItemsSource="{Binding Models}" DisplayMemberpath="Name"
+                             SelectedItem="{Binding SelectedItem, Mode=TwoWay}" />
+            <Label Text="Moons" FontAttributes="Bold"></Label>
+            <Label Text="{Binding SelectedItem.Moons}"></Label>
+        </StackLayout>
+    </ContentPage>
+
+    <ContentPage Title="HLi ModalView">
+        <hli:HliPlaceholderView>
+            <hli:HliPlaceholderView.UnfocusedView>
+                
+                <Label Text="Read more!"></Label>
+                
+            </hli:HliPlaceholderView.UnfocusedView>
+            
+            <hli:HliPlaceholderView.FocusedPage>
+                <ContentPage BackgroundColor="White" Padding="20">
+                    <Grid BackgroundColor="Gray" Padding="20" HorizontalOptions="Fill" VerticalOptions="Fill">
+
+                        <ScrollView HorizontalOptions="Fill" VerticalOptions="Fill">
+                            <Label TextColor="White" Margin="10,0,0,0"
+                               HorizontalOptions="Fill" VerticalOptions="Fill"
+                               Text="Odio velit duis! Habitasse mauris scelerisque vel quis, in in? Tristique nisi auctor pulvinar non pellentesque quis nec! Adipiscing urna egestas massa et, enim! Nisi et, pulvinar tristique integer nascetur! Ac cum. Aliquet, dictumst scelerisque. Eu! Ultrices rhoncus ut nec etiam vut, diam placerat sed? Integer ultrices amet sed scelerisque et. Duis adipiscing tincidunt tincidunt turpis, quis diam, placerat quis! In magnis ac in, sed aliquam, sit eu mus habitasse dictumst mattis! Ac nec turpis scelerisque! Velit et. Mid et! Lectus mattis duis porta! Augue risus et augue, diam amet. Ut pellentesque, porta, odio! Adipiscing mauris, sagittis a a augue porttitor, enim pulvinar dapibus? Aenean amet tincidunt et habitasse montes aenean. Scelerisque! Etiam natoque cras duis amet proin lectus in."
+                               LineBreakMode="WordWrap">
+                            </Label>
+                        </ScrollView>
+
+                    </Grid>
+                </ContentPage>
+            </hli:HliPlaceholderView.FocusedPage>
+        </hli:HliPlaceholderView>
+
+    </ContentPage>
+</TabbedPage>

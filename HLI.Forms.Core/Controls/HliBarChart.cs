@@ -16,7 +16,7 @@ namespace HLI.Forms.Core.Controls
 {
     /// <summary>
     ///     Creates a simple bar chart from <see cref="ItemsSource" /> using <see cref="ValuePath" /> and
-    ///     <see cref="LabelPath" /> to determine object members to display
+    ///     <see cref="LabelPath" /> to determine object members to display. Customize using <see cref="IsPercent" />
     /// </summary>
     public class HliBarChart : StackLayout
     {
@@ -29,29 +29,50 @@ namespace HLI.Forms.Core.Controls
             nameof(ItemsSource),
             typeof(IEnumerable),
             typeof(HliBarChart),
-            null,
+            new List<object>(),
             propertyChanged: OnItemsSourceChanged);
 
         /// <summary>
         ///     See <see cref="BarScale" />
         /// </summary>
         public static readonly BindableProperty BarScaleProperty =
-            BindableProperty.Create(nameof(BarScale), typeof(float), typeof(HliBarChart), 1, propertyChanged: OnBarScaleChanged);
+            BindableProperty.Create(nameof(BarScale), typeof(float), typeof(HliBarChart), 1.0f, propertyChanged: OnBarScaleChanged);
+
+        /// <summary>
+        ///     See <see cref="IsPercent" />
+        /// </summary>
+        public static readonly BindableProperty IsPercentProperty =
+            BindableProperty.Create(nameof(IsPercent), typeof(bool), typeof(HliBarChart), false);
 
         /// <summary>
         ///     See <see cref="LabelPath" />
         /// </summary>
-        public static readonly BindableProperty LabelPathProperty =
-            BindableProperty.Create(nameof(LabelPath), typeof(string), typeof(HliBarChart), null);
+        public static readonly BindableProperty LabelPathProperty = BindableProperty.Create(nameof(LabelPath), typeof(string), typeof(HliBarChart));
 
         /// <summary>
         ///     See <see cref="ValuePath" />
         /// </summary>
-        public static readonly BindableProperty ValuePathProperty =
-            BindableProperty.Create(nameof(ValuePath), typeof(string), typeof(HliBarChart), null);
+        public static readonly BindableProperty ValuePathProperty = BindableProperty.Create(nameof(ValuePath), typeof(string), typeof(HliBarChart));
 
         private static readonly List<Color> Colors =
-            new List<Color> { Color.Aqua, Color.Blue, Color.Fuchsia, Color.Green, Color.Purple, Color.Teal, Color.Yellow, Color.Olive, Color.Lime };
+            new List<Color>
+                {
+                    Color.Aqua,
+                    Color.Blue,
+                    Color.Fuchsia,
+                    Color.Green,
+                    Color.Purple,
+                    Color.Teal,
+                    Color.Yellow,
+                    Color.Olive,
+                    Color.Lime,
+                    Color.AliceBlue,
+                    Color.AntiqueWhite,
+                    Color.Beige,
+                    Color.DarkMagenta,
+                    Color.DarkOrange,
+                    Color.DarkSeaGreen
+                };
 
         #endregion
 
@@ -81,6 +102,16 @@ namespace HLI.Forms.Core.Controls
             get => (float)this.GetValue(BarScaleProperty);
 
             set => this.SetValue(BarScaleProperty, value);
+        }
+
+        /// <summary>
+        ///     Determines if the value should be displayed as a percent
+        /// </summary>
+        public bool IsPercent
+        {
+            get => (bool)this.GetValue(IsPercentProperty);
+
+            set => this.SetValue(IsPercentProperty, value);
         }
 
         public IEnumerable ItemsSource
@@ -130,28 +161,23 @@ namespace HLI.Forms.Core.Controls
         private StackLayout CreateBar(object item)
         {
             var percent = this.GetPercent(item);
-            var percentLabel = new Label
-                                   {
-                                       Text = percent.ToString("P0"),
-                                       FontSize = 10 ////, HorizontalTextAlignment = TextAlignment.Center 
-                                   };
+
+            var label = this.IsPercent
+                            ? new Label { Text = percent.ToString("P0"), FontSize = 10 }
+                            : new Label { Text = item.GetValueForProperty(this.ValuePath).ToString(), FontSize = 10 };
+
             var barView = new BoxView
                               {
                                   BackgroundColor = this.GetNextColor(),
                                   HeightRequest = percent * 100 * this.BarScale,
                                   VerticalOptions = LayoutOptions.Start
                               };
-            var titleLabel = new Label
-                                 {
-                                     Text = item.GetValueForProperty(this.LabelPath).ToString(),
-                                     FontSize = 10
-                                     ////HorizontalTextAlignment = TextAlignment.Center
-                                 };
+            var titleLabel = new Label { Text = item.GetValueForProperty(this.LabelPath).ToString(), FontSize = 10 };
 
             return new StackLayout
                        {
                            Orientation = StackOrientation.Vertical,
-                           Children = { percentLabel, barView, titleLabel },
+                           Children = { label, barView, titleLabel },
                            VerticalOptions = LayoutOptions.End
                        };
         }
@@ -163,13 +189,13 @@ namespace HLI.Forms.Core.Controls
 
         private Color GetNextColor()
         {
-            var color = Colors[this.currentColor];
             this.currentColor = this.currentColor + 1;
-            if (this.currentColor == 8)
+            if (this.currentColor > Colors.Count)
             {
                 this.currentColor = 0;
             }
 
+            var color = Colors[this.currentColor];
             return color;
         }
 

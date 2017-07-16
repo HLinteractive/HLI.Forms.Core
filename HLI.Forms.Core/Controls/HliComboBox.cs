@@ -22,8 +22,9 @@ namespace HLI.Forms.Core.Controls
     ///     <para>https://forums.xamarin.com/discussion/30801/xamarin-forms-bindable-picker</para>
     /// </remarks>
     /// <summary>
-    ///     Allows binding a <see cref="Picker" /> to an <see cref="ItemsSource" /> of objects and using
-    ///     <see cref="DisplayMemberpath" /> with <see cref="SelectedValuePath" />
+    ///     <para>Allows binding a <see cref="Picker" /> to an <see cref="ItemsSource" /> of objects.</para>
+    ///     <para>Customize using <see cref="DisplayMemberpath" /> with <see cref="SelectedValuePath" />.</para>
+    ///     <para>Get/set the whole selected object using <see cref="SelectedItem"/></para>
     /// </summary>
     public class HliComboBox : Picker
     {

@@ -1,30 +1,47 @@
 ﻿// // --------------------------------------------------------------------------------------------------------------------
-// // <copyright file="HLI.Forms.HliPlaceholderView.cs" company="HL Interactive">
-// //   Copyright © HL Interactive, Stockholm, Sweden, 2016
+// // <copyright file="HLI.Forms.Core.HliPlaceholderView.cs" company="HL Interactive">
+// //   Copyright © HL Interactive, Stockholm, Sweden, 2017
 // // </copyright>
 // // --------------------------------------------------------------------------------------------------------------------
 
-using HLI.Forms.Core.Extensions;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Input;
+
+using HLI.Forms.Core.Extensions;
 
 using Xamarin.Forms;
 
 namespace HLI.Forms.Core.Controls
 {
     /// <summary>
-    ///     A view that displays <see cref="PlaceholderView" /> when unfocused and <see cref="ModalPage" /> when the user is
-    ///     editing.
+    ///     <para>
+    ///         A view that displays <see cref="UnfocusedView" /> when unfocused and <see cref="FocusedPage" /> when the user
+    ///         is
+    ///         editing.
+    ///     </para>
+    ///     <para>The <see cref="FocusedPage" /> has a <see cref="CloseButton" /> you can customize.</para>
+    ///     <para>There is also a <see cref="OnClosed" /> event and <see cref="ClosedCommand"/> you can subscribe to.</para>
     /// </summary>
     public class HliPlaceholderView : ContentView
     {
+        #region Static Fields
+
+        /// <summary>
+        ///     See <see cref="ClosedCommand" />
+        /// </summary>
+        public static readonly BindableProperty ClosedCommandProperty =
+            BindableProperty.Create(nameof(ClosedCommand), typeof(ICommand), typeof(HliPlaceholderView));
+
+        #endregion
+
         #region Fields
 
         /// <summary>
         ///     Invoked when the modal is closed by user
         /// </summary>
-        public Action OnModalClosed;
+        public Action OnClosed;
 
         private readonly ContentView placeHolderView = new ContentView();
 
@@ -43,7 +60,7 @@ namespace HLI.Forms.Core.Controls
         {
             this.LoadAppResources();
             this.Content = this.placeHolderView;
-            this.CloseButton = new Button { Text = "Select" };
+            this.CloseButton = new Button { Text = "Ok" };
         }
 
         #endregion
@@ -51,7 +68,7 @@ namespace HLI.Forms.Core.Controls
         #region Public Properties
 
         /// <summary>
-        ///     The close button (view) used to dismiss the modal. Default is a Button with the text "Select".
+        ///     The close button (view) used to dismiss the modal. Default is a Button with the text "Ok".
         /// </summary>
         public View CloseButton
         {
@@ -76,14 +93,24 @@ namespace HLI.Forms.Core.Controls
         }
 
         /// <summary>
+        ///     Command that is called when the modal is closed. Bindable.
+        /// </summary>
+        public ICommand ClosedCommand
+        {
+            get => (ICommand)this.GetValue(ClosedCommandProperty);
+
+            set => this.SetValue(ClosedCommandProperty, value);
+        }
+
+        /// <summary>
         ///     The <see cref="ContentPage" /> displayed as modal. Remarks: there is no default padding  / margin.
         /// </summary>
-        public ContentPage ModalPage { get; set; } = new ContentPage();
+        public ContentPage FocusedPage { get; set; } = new ContentPage();
 
         /// <summary>
         ///     The view displayed as placeholder
         /// </summary>
-        public View PlaceholderView
+        public View UnfocusedView
         {
             get => this.placeHolderView.Content;
 
@@ -114,7 +141,8 @@ namespace HLI.Forms.Core.Controls
             {
                 await this.Navigation.PopModalAsync();
                 this.isModalOpen = false;
-                this.OnModalClosed?.Invoke();
+                this.OnClosed?.Invoke();
+                this.ClosedCommand?.Execute(null);
             }
         }
 
@@ -185,7 +213,7 @@ namespace HLI.Forms.Core.Controls
         /// <returns>A new page</returns>
         private ContentPage CreateModalPage()
         {
-            var page = this.ModalPage ?? new ContentPage();
+            var page = this.FocusedPage ?? new ContentPage();
 
             try
             {
