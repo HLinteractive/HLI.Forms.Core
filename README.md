@@ -119,6 +119,9 @@ Download the nuget package through Package Manager Console:
 * **Projects**
 * **Packages**
 	* HLI.Core
+	* System.Linq.Expressions 
+	* System.Linq.Queryable
+	* Xamarin.Forms
 
 ### NuGet Package Generation
 The project is configured to automatically generate a ***.nupkg** upon build with **`dotnet cli`**.

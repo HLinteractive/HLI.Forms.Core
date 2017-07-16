@@ -5,9 +5,9 @@
     <Company>HL interactive</Company>
     <GenerateAssemblyConfigurationAttribute>true</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
-    <Description>Common Xamarin.Forms views, converters, pages and services</Description>
+    <Description>Netstandard Xamarin.Forms views, converters, pages and services such as bindable picker and a modal view</Description>
     <Copyright>Copyright © HL Interactive 2017 Stockholm Sweden</Copyright>
-    <PackageReleaseNotes>Converted to netstandard/pcl multi-target VS2017</PackageReleaseNotes>
+    <PackageReleaseNotes>Converted to netstandard VS2017</PackageReleaseNotes>
     <PackageIconUrl>https://dl.dropboxusercontent.com/u/1027259/hliicon.ico</PackageIconUrl>
     <RepositoryUrl>https://github.com/HLinteractive/HLI.Forms.Core.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
@@ -16,7 +16,7 @@
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
     <DefaultLanguage>en-US</DefaultLanguage>
     <PackageLicenseUrl>https://raw.githubusercontent.com/HLinteractive/HLI.Forms.Core/master/LICENSE</PackageLicenseUrl>
-    <PackageTags>xamarin,xamarin.forms,mvvm,controls,views</PackageTags>
+    <PackageTags>xamarin,xamarin-forms,views,controls,modal,picker,dropdown,bindable-components,xaml,netstandard,pcl</PackageTags>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
     <Version>1.0.0-beta</Version>
   </PropertyGroup>
@@ -57,7 +57,8 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="HLI.Core" Version="1.0.5.3" />
-    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="5.3.3" />
+    <PackageReference Include="System.Linq.Expressions" Version="4.3.0" />
+    <PackageReference Include="System.Linq.Queryable" Version="4.3.0" />
     <PackageReference Include="Xamarin.Forms" Version="2.3.5.256-pre6" />
   </ItemGroup>
 </Project>
