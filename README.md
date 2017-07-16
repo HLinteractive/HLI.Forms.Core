@@ -15,37 +15,45 @@ Common extension methods. You should see this pop up in intellisense on `Applica
 ### Controls
 Pure Xamarin.Forms Views with no platform specific implentation.  
 Import the namespace to start using them:
-
+```xaml
 	<ContentPage 
 	xmlns:hli="clr-namespace:HLI.Forms.Core.Controls;assembly=HLI.Forms.Core">
 	</ContentPage> 
-
+```
 #### HliBarChart
 Creates a simple bar chart from **`ItemsSource`** using **`ValuePath`** and **`LabelPath`** to determine object members to display.
 
-![Screenshot](https://github.com/HLinteractive/HLI.Forms.Core/Screenshots/HliBarChart.PNG)
+![Screenshot](https://github.com/HLinteractive/HLI.Forms.Core/blob/master/Screenshots/HliBarChart.PNG?raw=true)
 
+```xaml
     <hli:HliBarChart ItemsSource="{Binding CostPerWeekItems}" ValuePath="Cost" LabelPath="Week" IsPercent="True" BarScale="2" />
+```
 
 #### HliComboBox
 Allows binding a **`Picker`** to an **`ItemsSource`** of objects and using **`DisplayMemberpath`** with **`SelectedValuePath`** 
 Also supports binding the selected object using **`SelectedItem`**.  
 Based on **[bindable picker written by Simon Villiard](https://forums.xamarin.com/discussion/30801/xamarin-forms-bindable-picker)**
 
-![Screenshot](https://github.com/HLinteractive/HLI.Forms.Core/Screenshots/HliComboBox.GIF)
+![Screenshot](https://github.com/HLinteractive/HLI.Forms.Core/blob/master/Screenshots/HliComboBox.GIF?raw=true)
 
+```xaml
     <hli:HliComboBox ItemsSource="ItemsSource="{Binding Countries}"" DisplayMemberpath="Name" SelectedItem="{Binding SelectedItem, Mode=TwoWay}" />
+```
 
 #### HliFeedbackView
 Displays feedback to the user when a **`HliFeedbackMessage`** is published through **`MessagingCenter`** using hte key **`Constants.FeedbackKeys.Message`**
 
 **XAML**
 
+```xaml
     <hli:HliFeedbackView />
+```
 
 **Code**
 
+```csharp
     MessagingCenter.Send(new HliFeedbackMessage(HliFeedbackMessage.FeedbackType.Error, "We're sorry!"), Constants.FeedbackKeys.Message);
+```
 
 #### HliImageButton
 Display a button with **`Image`** content optionally using an **`ImageConverter`**
@@ -56,11 +64,13 @@ Display a button with **`Image`** content optionally using an **`ImageConverter`
 A simple listview for a smaller collection when **`ListView`** is not required.  
 Binds **`ItemsSource`** using **`ItemTemplate`**
 
+```xaml
     <hli:HliItemsView ItemsSource="MyItems">
     	<hli:HliItemsView.ItemTemplate>
     		<!-- View content -->
     	</hli:HliItemsView.ItemTemplate>
     </hli:HliItemsView>
+```
 
 #### HliLinkButton
 Displays **`Text`** as a simple clickable link. Supports **`Command`** and **`ClickedEvent`**
@@ -72,9 +82,10 @@ The `FocusedPage` has a **`CloseButton`** you can customize.
 
 here is also a **`OnClosed`** event and **`ClosedCommand`** you can subscribe to.
 
-![Screenshot](https://github.com/HLinteractive/HLI.Forms.Core/Screenshots/HliPlaceholderlView.GIF)
+![Screenshot](https://github.com/HLinteractive/HLI.Forms.Core/blob/master/Screenshots/HliPlaceholderlView.GIF?raw=true)
 
 
+```xaml
         <hli:HliPlaceholderView>
             <hli:HliPlaceholderView.UnfocusedView>
                 <Label Text="Read more!"></Label>
@@ -94,6 +105,8 @@ here is also a **`OnClosed`** event and **`ClosedCommand`** you can subscribe to
                 </ContentPage>
             </hli:HliPlaceholderView.FocusedPage>
         </hli:HliPlaceholderView>
+```
+
 #### HliOrientatedView
  A view that respons to orientation changes and either display the **`PortraitContent`** or **`LandscapeContent`**
 
