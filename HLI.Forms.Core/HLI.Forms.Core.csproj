@@ -20,7 +20,7 @@
     <PackageLicenseUrl>https://raw.githubusercontent.com/HLinteractive/HLI.Forms.Core/master/LICENSE</PackageLicenseUrl>
     <PackageTags>xamarin,xamarin-forms,views,controls,modal,picker,dropdown,bindable-components,xaml,netstandard,pcl</PackageTags>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-    <Version>1.0.0-beta</Version>
+    <Version>1.0.0-rc</Version>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net45|AnyCPU'">
     <WarningLevel>0</WarningLevel>
