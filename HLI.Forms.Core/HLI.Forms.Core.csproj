@@ -9,7 +9,7 @@
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <Description>Netstandard Xamarin.Forms views, converters, pages and services such as bindable picker and a modal view</Description>
     <Copyright>Copyright © HL Interactive 2017 Stockholm Sweden</Copyright>
-    <PackageReleaseNotes>Converted to netstandard VS2017</PackageReleaseNotes>
+    <PackageReleaseNotes>Release Candidate: updated Xamarin.Forms to stable version 2.3.4.247</PackageReleaseNotes>
     <PackageIconUrl>https://dl.dropboxusercontent.com/u/1027259/hliicon.ico</PackageIconUrl>
     <RepositoryUrl>https://github.com/HLinteractive/HLI.Forms.Core.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
