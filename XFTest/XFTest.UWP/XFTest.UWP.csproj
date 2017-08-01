@@ -152,10 +152,6 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\HLI.Forms.Core\HLI.Forms.Core.csproj">
-      <Project>{235c8ae8-e35e-4a56-ab74-da46b88d22a3}</Project>
-      <Name>HLI.Forms.Core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\XFTest.NetStandard\XFTest.NetStandard.csproj">
       <Project>{e59df350-5edd-4668-861c-0dbc3ae3fbdd}</Project>
       <Name>XFTest.NetStandard</Name>

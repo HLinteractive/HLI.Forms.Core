@@ -2,8 +2,32 @@
 > Copyright © HL Interactive 2015, Thomas Hagström,
 > Horisontvägen 85, Stockholm, Sweden
 
-# <a name="hlidata"></a>HLI.Forms.Core #
+- [HLI.Forms.Core](#hliformscore)
+  * [Usage](#usage)
+    + [Services](#services)
+    + [Converters](#converters)
+    + [Extensions](#extensions)
+    + [Controls](#controls)
+      - [HliBarChart](#hlibarchart)
+      - [HliComboBox](#hlicombobox)
+      - [HliFeedbackView](#hlifeedbackview)
+      - [HliImageButton](#hliimagebutton)
+      - [HliItemsView](#hliitemsview)
+      - [HliLinkButton](#hlilinkbutton)
+      - [HliPlaceholderView](#hliplaceholderview)
+      - [HliOrientatedView](#hliorientatedview)
+  * [Delivery & Deployment](#delivery---deployment)
+  * [Dependencies](#dependencies)
+    + [NuGet Package Generation](#nuget-package-generation)
+  * [Solution File Structure](#solution-file-structure)
+  * [Changes and backward compatibility](#changes-and-backward-compatibility)
+
+# HLI.Forms.Core #
 Xamarin.Forms boilerplate functions to facilitate project creation
+
+[![NuGet](https://img.shields.io/nuget/v/HLI.Forms.Core.svg)
+![Downloads](https://img.shields.io/nuget/dt/HLI.Forms.Core.svg)](https://preview.nuget.org/packages/HLI.Forms.Core/)
+![Build Status VSTS](https://nodessoft.visualstudio.com/_apis/public/build/definitions/7452d5a3-4e17-4d49-a0df-4f3b5961c31b/23/badge)
 
 ## Usage
 ### Services
@@ -67,7 +91,9 @@ Binds **`ItemsSource`** using **`ItemTemplate`**
 ```xaml
     <hli:HliItemsView ItemsSource="MyItems">
     	<hli:HliItemsView.ItemTemplate>
-    		<!-- View content -->
+			<DataTemplate>
+    			<!-- View content -->
+			</DataTemplate>
     	</hli:HliItemsView.ItemTemplate>
     </hli:HliItemsView>
 ```
@@ -139,3 +165,4 @@ The project is configured to automatically generate a ***.nupkg** upon build wit
 		* **Services** - see above
 
 ## Changes and backward compatibility
+* VS2017 CsProj NetStandard 1.4
