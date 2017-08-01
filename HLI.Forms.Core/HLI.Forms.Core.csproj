@@ -7,14 +7,14 @@
     <Company>HL interactive</Company>
     <GenerateAssemblyConfigurationAttribute>true</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
-    <Description>Netstandard Xamarin.Forms views, converters, pages and services such as bindable picker and a modal view</Description>
+    <Description>Netstandard/PCL/Win10 Xamarin.Forms views, converters, pages and services such as bindable picker and a modal view</Description>
     <Copyright>Copyright © HL Interactive 2017 Stockholm Sweden</Copyright>
-    <PackageReleaseNotes>Release Candidate: updated Xamarin.Forms to stable version 2.3.4.247</PackageReleaseNotes>
+    <PackageReleaseNotes>Release Candidate: multi-target PCL / NetStandard 1.4 using VS2017 CsProj</PackageReleaseNotes>
     <PackageIconUrl>https://dl.dropboxusercontent.com/u/1027259/hliicon.ico</PackageIconUrl>
     <RepositoryUrl>https://github.com/HLinteractive/HLI.Forms.Core.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageProjectUrl>https://github.com/HLinteractive/HLI.Forms.Core</PackageProjectUrl>
-    <TargetFrameworks>netstandard1.4;portable-win81+wpa81;</TargetFrameworks>
+    <TargetFrameworks>netstandard1.4;uap10.0;portable-win81+wpa81;</TargetFrameworks>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
     <DefaultLanguage>en-US</DefaultLanguage>
     <PackageLicenseUrl>https://raw.githubusercontent.com/HLinteractive/HLI.Forms.Core/master/LICENSE</PackageLicenseUrl>
@@ -36,6 +36,16 @@
     <TargetFrameworkProfile>Profile32</TargetFrameworkProfile>
     <NugetTargetMoniker>.NETPortable,Version=v0.0,Profile=Profile32</NugetTargetMoniker>
     <LanguageTargets>$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets</LanguageTargets>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'uap10.0'">
+    <NugetTargetMoniker>UAP,Version=v10.0</NugetTargetMoniker>
+    <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
+    <TargetPlatformVersion>10.0.15063.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.10568.0</TargetPlatformMinVersion>
+    <TargetFrameworkIdentifier>.NETCore</TargetFrameworkIdentifier>
+    <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
+    <DefineConstants>$(DefineConstants);WINDOWS_UWP</DefineConstants>
+    <LanguageTargets>$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets</LanguageTargets>
   </PropertyGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'portable-win81+wpa81' ">
     <TargetPlatform Include="Windows, Version=8.1" />

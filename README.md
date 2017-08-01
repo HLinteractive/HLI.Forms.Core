@@ -149,8 +149,12 @@ Download the nuget package through Package Manager Console:
 	* System.Linq.Queryable
 	* Xamarin.Forms
 
+### Tools
+* Windows 8.1 SDK
+* Windows 10 SDK
+
 ### NuGet Package Generation
-The project is configured to automatically generate a ***.nupkg** upon build with **`dotnet cli`**.
+The project is configured to automatically generate a ***.nupkg** upon build using Visual Studio 2017 CsProj MSBuild.
 
 ## Solution File Structure
 
