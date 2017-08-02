@@ -116,10 +116,13 @@
     <InterfaceDefinition Include="Resources\LaunchScreen.storyboard" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="HLI.Core, Version=1.0.5.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\HLI.Core.1.0.5.3\lib\netstandard1.4\HLI.Core.dll</HintPath>
+    <Reference Include="HLI.Core, Version=1.0.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\HLI.Core.1.0.6-beta\lib\netstandard1.4\HLI.Core.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.10.0.3\lib\netstandard1.3\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.Net.Http" />

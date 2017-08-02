@@ -1,5 +1,6 @@
 ﻿{
   "dependencies": {
+    "HLI.Core": "1.0.6-beta",
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.3.3",
     "Xamarin.Forms": "2.3.4.247"
   },

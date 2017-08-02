@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="HLI.Core" Version="1.0.6-beta" />
     <PackageReference Include="Xamarin.Forms" Version="2.3.4.247" />
   </ItemGroup>
 
