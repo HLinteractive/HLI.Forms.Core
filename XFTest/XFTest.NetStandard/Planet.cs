@@ -3,14 +3,44 @@
 // //   Copyright © HL Interactive, Stockholm, Sweden, 2017
 // // </copyright>
 // // --------------------------------------------------------------------------------------------------------------------
+
 namespace XFTest.NetStandard
 {
     public class Planet
     {
-        public bool IsPlanetoid => true;
+        #region Constants
+
+        private const string Thumbnailpath = "revision/latest/scale-to-width-down/100";
+
+        #endregion
+
+        #region Enums
+
+        public enum PlanetClass
+        {
+            Terrestrial,
+
+            GasGiant,
+
+            DesertPlanet
+        }
+
+        #endregion
+
+        #region Public Properties
+
+        public PlanetClass Class { get; set; }
+
+        public string Fauna { get; set; }
+
+        public string Image { get; set; }
+
+        public double Moons { get; set; }
 
         public string Name { get; set; }
 
-        public double Moons { get; set; }
+        public string Thumbnail => this.Image + Thumbnailpath;
+
+        #endregion
     }
 }

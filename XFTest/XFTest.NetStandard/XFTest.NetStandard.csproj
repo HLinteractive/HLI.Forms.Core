@@ -1,10 +1,84 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFramework>netstandard1.4</TargetFramework>
+    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
     <PackageTargetFallback>portable-net45+win8+wpa81+wp8</PackageTargetFallback>
     <DebugType>full</DebugType>
+    <Authors>Thomas Hagström, HL Interactive</Authors>
+    <Company>HL interactive</Company>
+    <GenerateAssemblyConfigurationAttribute>true</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <Description>Test of Netstandard/PCL/Win10 Xamarin.Forms views, converters, pages and services such as bindable picker and a modal view</Description>
+    <Copyright>Copyright © HL Interactive 2017 Stockholm Sweden</Copyright>
+    <TargetFrameworks>netstandard1.4</TargetFrameworks>
+    <Product>$(AssemblyName) ($(TargetFramework))</Product>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <Version>1.0.0</Version>
+    <GenerateDocumentationFile Condition=" '$(Configuration)' == 'Release' ">true</GenerateDocumentationFile>
+    <IncludeSymbols>true</IncludeSymbols>
   </PropertyGroup>
+  <!-- NetStandard facade for PCL compatibility
+  https://oren.codes/2017/01/04/multi-targeting-the-world-a-single-project-to-rule-them-all/#windows-example
+  -->
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard1.0'">
+    <DefineConstants>$(DefineConstants);PCL</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'portable-win81+wpa81'">
+    <TargetFrameworkIdentifier>.NETPortable</TargetFrameworkIdentifier>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Profile32</TargetFrameworkProfile>
+    <NugetTargetMoniker>.NETPortable,Version=v0.0,Profile=Profile32</NugetTargetMoniker>
+    <LanguageTargets>$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets</LanguageTargets>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'uap10.0'">
+    <NugetTargetMoniker>UAP,Version=v10.0</NugetTargetMoniker>
+    <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
+    <TargetPlatformVersion>10.0.15063.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.10568.0</TargetPlatformMinVersion>
+    <TargetFrameworkIdentifier>.NETCore</TargetFrameworkIdentifier>
+    <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
+    <DefineConstants>$(DefineConstants);WINDOWS_UWP</DefineConstants>
+    <LanguageTargets>$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets</LanguageTargets>
+  </PropertyGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'portable-win81+wpa81' ">
+    <TargetPlatform Include="Windows, Version=8.1" />
+    <TargetPlatform Include="WindowsPhoneApp, Version=8.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Platforms\**\*.cs;Resources\**\*.*" />
+    <EmbeddedResource Include="**\*.resx" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.4' ">
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0' or '$(TargetFramework)' == 'wpa81' or '$(TargetFramework)' == 'win8' or '$(TargetFramework)' == 'portable-win81+wpa81' or '$(TargetFramework)' == 'wp8' ">    
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">    
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0' ">
+    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform " Version="5.2.2" />
+  </ItemGroup>
+  <Target Name="AdjustReferringTargetFrameworkForUAP" BeforeTargets="GetTargetFrameworkProperties">
+    <PropertyGroup Condition="'$(ReferringTargetFramework)' == '.NETCore,Version=v5.0'">
+      <ReferringTargetFramework>UAP,Version=v10.0</ReferringTargetFramework>
+    </PropertyGroup>
+  </Target>
+  <ItemGroup>
+    <Compile Remove="obj\Debug\**" />
+    <EmbeddedResource Remove="obj\Debug\**" />
+    <None Remove="obj\Debug\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="obj\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="HLI.Core" Version="1.0.6" />
+    <PackageReference Include="HLI.Forms.Core" Version="1.0.1" />
+    <PackageReference Include="System.Linq.Expressions" Version="4.3.0" />
+    <PackageReference Include="System.Linq.Queryable" Version="4.3.0" />
+    <PackageReference Include="Xamarin.Forms" Version="2.3.4.247" />
+  </ItemGroup>
+  <!--<ItemGroup>
+    <PackageReference Include="NETStandard.Library" Condition="'$(TargetFramework)' != 'net45'" Version="1.6.1" />
+  </ItemGroup>-->
 
   <ItemGroup>
     <EmbeddedResource Include="App.xaml">
@@ -13,15 +87,6 @@
     <EmbeddedResource Include="MainPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="HLI.Core" Version="1.0.6-beta" />
-    <PackageReference Include="Xamarin.Forms" Version="2.3.4.247" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\HLI.Forms.Core\HLI.Forms.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,6 +1,6 @@
 ﻿// // --------------------------------------------------------------------------------------------------------------------
-// // <copyright file="HLI.Forms.AppService.cs" company="HL Interactive">
-// //   Copyright © HL Interactive, Stockholm, Sweden, 2016
+// // <copyright file="HLI.Forms.Core.AppService.cs" company="HL Interactive">
+// //   Copyright © HL Interactive, Stockholm, Sweden, 2017
 // // </copyright>
 // // --------------------------------------------------------------------------------------------------------------------
 
@@ -11,12 +11,11 @@ using System.Runtime.Serialization;
 
 using HLI.Forms.Core.Controls;
 using HLI.Forms.Core.Models;
+
+using Xamarin.Forms;
 #if !DEBUG
 using HLI.Forms.Core.Interfaces;
-using HLI.Forms.Core.Models;
 #endif
-using Xamarin.Forms;
-
 using static HLI.Forms.Core.Constants;
 
 namespace HLI.Forms.Core.Services
@@ -26,14 +25,20 @@ namespace HLI.Forms.Core.Services
     /// </summary>
     public static class AppService
     {
-#region Constants
+        #region Constants
 
         private const string DebugSeparator = " ********** ";
 
-#endregion
+        #endregion
 
-#region Public Methods and Operators
+        #region Public Methods and Operators
 
+        /// <summary>
+        ///     Reports an issue to <a href="http://www.hockeyapp.com/">http://www.hockeyapp.com/</a>. Requires that
+        ///     <see cref="IAnalyticsService" /> is
+        ///     implemented on the platform.
+        /// </summary>
+        /// <param name="message"></param>
         public static void ReportToHockeyApp(string message)
         {
             try
@@ -45,9 +50,7 @@ namespace HLI.Forms.Core.Services
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(DebugSeparator + DebugSeparator);
-                Debug.WriteLine("HOCKEYAPP NOT AVAILABLE:");
-                Debug.WriteLine(ex.Message);
+                WriteDebug("HOCKEYAPP NOT AVAILABLE", ex.Message);
             }
         }
 
@@ -118,6 +121,6 @@ namespace HLI.Forms.Core.Services
             MessagingCenter.Send(new HliFeedbackMessage(HliFeedbackMessage.FeedbackType.Message, message), FeedbackKeys.Message);
         }
 
-#endregion
+        #endregion
     }
 }

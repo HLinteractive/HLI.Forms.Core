@@ -117,7 +117,10 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="HLI.Core, Version=1.0.6.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\HLI.Core.1.0.6-beta\lib\netstandard1.4\HLI.Core.dll</HintPath>
+      <HintPath>..\..\packages\HLI.Core.1.0.6\lib\netstandard1.4\HLI.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="HLI.Forms.Core, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\HLI.Forms.Core.1.0.1\lib\netstandard1.4\HLI.Forms.Core.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -143,10 +146,6 @@
     <Reference Include="Xamarin.iOS" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\HLI.Forms.Core\HLI.Forms.Core.csproj">
-      <Project>{235c8ae8-e35e-4a56-ab74-da46b88d22a3}</Project>
-      <Name>HLI.Forms.Core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\XFTest.NetStandard\XFTest.NetStandard.csproj">
       <Project>{e59df350-5edd-4668-861c-0dbc3ae3fbdd}</Project>
       <Name>XFTest.NetStandard</Name>

@@ -1,19 +1,66 @@
 ﻿// // --------------------------------------------------------------------------------------------------------------------
-// // <copyright file="HLI.Forms.AppExtensions.cs" company="HL Interactive">
-// //   Copyright © HL Interactive, Stockholm, Sweden, 2016
+// // <copyright file="HLI.Forms.Core.AppExtensions.cs" company="HL Interactive">
+// //   Copyright © HL Interactive, Stockholm, Sweden, 2017
 // // </copyright>
 // // --------------------------------------------------------------------------------------------------------------------
 
 using System;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
+using HLI.Forms.Core.Controls;
 using HLI.Forms.Core.Services;
+
+using Xamarin.Forms;
 
 namespace HLI.Forms.Core.Extensions
 {
     public static class AppExtensions
     {
         #region Public Methods and Operators
+
+        /// <summary>
+        ///     Tries to find the key in application settings
+        /// </summary>
+        /// <returns>Setting value or <c>null</c></returns>
+        public static object GetSetting(this Application app, string key)
+        {
+            try
+            {
+                if (!app.Properties.ContainsKey(key))
+                {
+                    return false;
+                }
+
+                return Application.Current.Properties[key];
+            }
+            catch (Exception ex)
+            {
+                AppService.WriteDebug(ex);
+                return null;
+            }
+        }
+
+        /// <summary>
+        ///     Saves key / value to app settings
+        /// </summary>
+        public static async Task SaveSetting(this Application app, string key, object value)
+        {
+            try
+            {
+                if (app.Properties.ContainsKey(key))
+                {
+                    app.Properties.Remove(key);
+                }
+
+                app.Properties.Add(key, value);
+                await app.SavePropertiesAsync();
+            }
+            catch (Exception ex)
+            {
+                AppService.WriteDebug(ex);
+            }
+        }
 
         /// <summary>
         ///     Write debug trace for Exception
