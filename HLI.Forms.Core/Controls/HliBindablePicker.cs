@@ -42,7 +42,7 @@ namespace HLI.Forms.Core.Controls
             propertyChanged: OnItemsSourcePropertyChanged);
 
         /// <summary>
-        ///     The display memberpath property.
+        ///     See <see cref="DisplayMemberpath"/>
         /// </summary>
         public static readonly BindableProperty DisplayMemberpathProperty = BindableProperty.Create(
             nameof(DisplayMemberpath),
@@ -59,7 +59,7 @@ namespace HLI.Forms.Core.Controls
                 });
 
         /// <summary>
-        ///     Gets or sets the selected item (business object)
+        ///     See <see cref="SelectedItem"/>
         /// </summary>
         public new static readonly BindableProperty SelectedItemProperty = BindableProperty.Create(
             nameof(SelectedItem),
@@ -76,7 +76,7 @@ namespace HLI.Forms.Core.Controls
                 });
 
         /// <summary>
-        ///     Name of the property that will populate <see cref="SelectedValue" />
+        ///     See <see cref="SelectedValuePath"/>
         /// </summary>
         public static readonly BindableProperty SelectedValuePathProperty = BindableProperty.Create(
             nameof(SelectedValuePath),
@@ -84,7 +84,7 @@ namespace HLI.Forms.Core.Controls
             typeof(HliBindablePicker));
 
         /// <summary>
-        ///     The selected value, specified by <see cref="SelectedValuePath" />
+        ///     See <see cref="SelectedValue"/>
         /// </summary>
         public static readonly BindableProperty SelectedValueProperty = BindableProperty.Create(
             nameof(SelectedValue),
@@ -164,7 +164,7 @@ namespace HLI.Forms.Core.Controls
 
         /// <summary>
         ///     <para>Name of the property to display in the combo box selection drop down.</para>
-        ///     <para>For an IDictionary <see cref="ItemsSource" />, <see cref="DisplayMemberpath" /> defaults to "Quantity"</para>
+        ///     <para>For an IDictionary <see cref="ItemsSource" /> it defaults to the value "Quantity"</para>
         /// </summary>
         public string DisplayMemberpath
         {
@@ -187,7 +187,7 @@ namespace HLI.Forms.Core.Controls
         }
 
         /// <summary>
-        ///     Gets or sets the selected item.
+        ///     Gets or sets the selected item (business object)
         /// </summary>
         /// <value>
         ///     The selected item.
@@ -211,7 +211,7 @@ namespace HLI.Forms.Core.Controls
 
         /// <summary>
         ///     <para>Name of the property that will populate <see cref="SelectedValue" /></para>
-        ///     <para>For an IDictionary <see cref="ItemsSource" />, <see cref="DisplayMemberpath" /> defaults to "Key"</para>
+        ///     <para>For an IDictionary <see cref="ItemsSource" /> it defaults to the value "Key"</para>
         /// </summary>
         public string SelectedValuePath
         {
