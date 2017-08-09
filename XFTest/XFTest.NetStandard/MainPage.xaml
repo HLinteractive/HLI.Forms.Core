@@ -51,19 +51,33 @@
         </ContentPage.BindingContext>
 
         <StackLayout>
-            <Label FontAttributes="Bold" Text="Select planet" />
+            <Label FontAttributes="Bold" Text="SelectedItemt" />
             <hli:HliComboBox
                 DisplayMemberPath="Name"
                 ItemsSource="{Binding Models}"
-                SelectedItem="{Binding SelectedItem, Mode=TwoWay}" />
+                SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
+                <hli:HliComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <StackLayout Orientation="Horizontal">
+                                <Image
+                                    HeightRequest="20"
+                                    Source="{Binding Thumbnail}"
+                                    WidthRequest="20" />
+                                <Label Text="{Binding Name}" />
+                            </StackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </hli:HliComboBox.ItemTemplate>
+            </hli:HliComboBox>
             <Image
                 HeightRequest="200"
                 Source="{Binding SelectedItem.Image}"
                 WidthRequest="200" />
-            <Label FontAttributes="Bold" Text="SelectedItem.Moons" />
-            <Label Text="{Binding SelectedItem.Moons}" />
-            <Label FontAttributes="Bold" Text="SelectedItem.Fauna" />
-            <Label Text="{Binding SelectedItem.Fauna}" />
+            <Label FontAttributes="Bold" Text="SelectedItem.Class" />
+            <Label Text="{Binding SelectedItem.Class}" />
+            <Label FontAttributes="Bold" Text="SelectedItem.Name" />
+            <Label Text="{Binding SelectedItem.Name}" />
         </StackLayout>
     </ContentPage>
 

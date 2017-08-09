@@ -71,7 +71,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="HLI.Core" Version="1.0.6" />
-    <PackageReference Include="HLI.Forms.Core" Version="1.0.1" />
     <PackageReference Include="System.Linq.Expressions" Version="4.3.0" />
     <PackageReference Include="System.Linq.Queryable" Version="4.3.0" />
     <PackageReference Include="Xamarin.Forms" Version="2.3.4.247" />
@@ -87,6 +86,10 @@
     <EmbeddedResource Include="MainPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\HLI.Forms.Core\HLI.Forms.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

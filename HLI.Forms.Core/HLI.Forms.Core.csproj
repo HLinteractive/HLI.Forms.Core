@@ -14,7 +14,7 @@
     <RepositoryUrl>https://github.com/HLinteractive/HLI.Forms.Core.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageProjectUrl>https://github.com/HLinteractive/HLI.Forms.Core</PackageProjectUrl>
-    <TargetFrameworks>netstandard1.4;uap10.0;portable-win81+wpa81;</TargetFrameworks>
+    <TargetFramework>netstandard1.4</TargetFramework>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
     <DefaultLanguage>en-US</DefaultLanguage>
     <PackageLicenseUrl>https://raw.githubusercontent.com/HLinteractive/HLI.Forms.Core/master/LICENSE</PackageLicenseUrl>

@@ -33,7 +33,7 @@ Xamarin.Forms boilerplate functions to facilitate project creation
 ## <a name="usage"></a>Usage
 ### <a name="services"></a>Services
 `AppService` and `SpeechService`
-### <a name="converters></a>Converters
+### <a name="converters"></a>Converters
 Common converters such as `BoolToInvertedConverter`. Also:
 #### BytesToImageSourceConverter
 Converts the supplied `byte` array to an `ImageSource`

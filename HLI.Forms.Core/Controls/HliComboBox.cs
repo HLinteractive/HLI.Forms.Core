@@ -21,14 +21,14 @@ namespace HLI.Forms.Core.Controls
 {
     /// <inheritdoc />
     /// <summary>
-    ///     Base class for picker views with template support. ,
-    ///     <see cref="Placeholder" />, <see cref="ItemsSource" />, <see cref="ItemTemplate" /> etc.
+    ///     Custom combo pox with <see cref="Placeholder" />, <see cref="ItemsSource" /> and optional
+    ///     <see cref="ItemTemplate" />.
     /// </summary>
     /// <seealso cref="HliAutoComplete" />
     /// <seealso cref="HliBindablePicker" />
     /// <example>
     ///     <code lang="XAML"><![CDATA[
-    /// 
+    /// <hli:HliComboBox DisplayMemberPath="Name" ItemsSource="{Binding Models}" SelectedItem="{Binding SelectedItem, Mode=TwoWay}" 
     ///     ]]></code>
     /// </example>
     /// <remarks>"Drop down" in this view referes to content displayed as a modal using Xamarin Navigation</remarks>
@@ -348,7 +348,7 @@ namespace HLI.Forms.Core.Controls
         }
 
         /// <summary>
-        ///     The <see cref="Xamarin.Forms.ListView.ItemTemplate" />
+        ///     The <see cref="ListView.ItemTemplate" />
         /// </summary>
         /// <seealso cref="ItemsSource" />
         public DataTemplate ItemTemplate
@@ -379,7 +379,7 @@ namespace HLI.Forms.Core.Controls
         }
 
         /// <summary>
-        ///     Selected item for the <see cref="DropDownListView" />. Default value is <c>null</c>
+        ///     Selected item for the <see cref="DropDownListView" />. Default value is <c>null</c>. Bindable property.
         /// </summary>
         public object SelectedItem
         {
@@ -399,9 +399,8 @@ namespace HLI.Forms.Core.Controls
         }
 
         /// <summary>
-        ///     Template for the "selected" area. BindingContext is <see cref="SelectedItem" />.
+        ///     Template for the "selected" area. BindingContext is <see cref="SelectedItem" />. Defaults to  <see cref="ItemTemplate" />. Bindable property.
         /// </summary>
-        /// <remarks>Set to <see cref="ItemTemplate" /> if not specified otherwise</remarks>
         public DataTemplate SelectedItemTemplate
         {
             get => (DataTemplate)this.GetValue(SelectedItemTemplateProperty);
@@ -449,8 +448,19 @@ namespace HLI.Forms.Core.Controls
             {
                 return;
             }
+            
+            var cell = this.SelectedItemTemplate.CreateContent() as Cell;
+            if (cell == null)
+            {
+                throw new Exception($"{nameof(this.SelectedItemTemplate)} expected to be a DataTemplate containing a Cell");
+            }
 
-            var view = (View)this.SelectedItemTemplate.CreateContent();
+            var view = cell.Parent as View;
+            if (view == null)
+            {
+                return;
+            }
+
             view.BindingContext = this.SelectedItem;
             view.HorizontalOptions = LayoutOptions.StartAndExpand;
             view.AddTapGestureRecognizer(this.OnSelectedItemTapped);
@@ -610,9 +620,9 @@ namespace HLI.Forms.Core.Controls
 
             // Set SelectedItemTemplate to the same value if not set
             var comboBox = bindable.AsType<HliComboBox>();
-            if (comboBox.SelectedItemTemplate == default(DataTemplate))
+            // (comboBox.ItemTemplate == default(DataTemplate))
             {
-                comboBox.SelectedItemTemplate = (DataTemplate)newValue;
+                comboBox.ItemTemplate = (DataTemplate)newValue;
             }
 
             comboBox.CreateChildren();
@@ -714,9 +724,9 @@ namespace HLI.Forms.Core.Controls
 
         private void CreateItemTemplateFromDisplayMemberPath()
         {
-            var cell = new TextCell();
-            cell.SetBinding(TextCell.TextProperty, this.DisplayMemberPath);
-            this.ItemTemplate = new DataTemplate(() => cell);
+            var label = new Label();
+            label.SetBinding(Label.TextProperty, this.DisplayMemberPath);
+            this.ItemTemplate = new DataTemplate(() => label);
         }
 
         private void CreatePlaceholder()
