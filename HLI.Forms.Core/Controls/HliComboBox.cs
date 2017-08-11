@@ -98,9 +98,9 @@ namespace HLI.Forms.Core.Controls
         /// </summary>
         public static readonly BindableProperty RowHeightProperty = BindableProperty.Create(
             nameof(RowHeight),
-            typeof(double),
+            typeof(int),
             typeof(HliComboBox),
-            30.0d,
+            30,
             propertyChanged: OnRowHeightChanged);
 
         /// <summary>
@@ -182,7 +182,7 @@ namespace HLI.Forms.Core.Controls
         protected readonly Grid DropDownGrid = new Grid { VerticalOptions = LayoutOptions.Start, Margin = new Thickness(0, -1, 0, 0), Padding = 2 };
 
         /// <summary>
-        ///     THe listview displayed as a "dropdown" or "popup"
+        ///     The listview displayed as a "dropdown" or "popup"
         /// </summary>
         protected readonly ListView DropDownListView = new ListView
                                                            {
@@ -348,7 +348,7 @@ namespace HLI.Forms.Core.Controls
         }
 
         /// <summary>
-        ///     The <see cref="ListView.ItemTemplate" />
+        ///     A <see cref="ListView.ItemTemplate" />; expects a <see cref="DataTemplate" /> containing a <see cref="Cell" />
         /// </summary>
         /// <seealso cref="ItemsSource" />
         public DataTemplate ItemTemplate
@@ -371,11 +371,21 @@ namespace HLI.Forms.Core.Controls
         /// <summary>
         ///     Specifiers the height of each item in the drop down. Default value is <c>30</c>
         /// </summary>
-        public double RowHeight
+        public int RowHeight
         {
-            get => (double)this.GetValue(RowHeightProperty);
+            get => (int)this.GetValue(RowHeightProperty);
 
             set => this.SetValue(RowHeightProperty, value);
+        }
+        
+        /// <summary>
+        /// The amount of spacing between rows in the combobox. Default value is 10. Bindable property.
+        /// </summary>
+        public new float RowSpacing
+        {
+            get => (float)this.GetValue(RowSpacingProperty);
+
+            set => this.SetValue(RowSpacingProperty, value);
         }
 
         /// <summary>
@@ -399,7 +409,8 @@ namespace HLI.Forms.Core.Controls
         }
 
         /// <summary>
-        ///     Template for the "selected" area. BindingContext is <see cref="SelectedItem" />. Defaults to  <see cref="ItemTemplate" />. Bindable property.
+        ///     Template for the "selected" area. BindingContext is <see cref="SelectedItem" />. Defaults to
+        ///     <see cref="ItemTemplate" />. Bindable property.
         /// </summary>
         public DataTemplate SelectedItemTemplate
         {
@@ -448,7 +459,7 @@ namespace HLI.Forms.Core.Controls
             {
                 return;
             }
-            
+
             var cell = this.SelectedItemTemplate.CreateContent() as Cell;
             if (cell == null)
             {
@@ -709,6 +720,9 @@ namespace HLI.Forms.Core.Controls
             // Populate ListView
             this.DropDownListView.ItemTemplate = this.ItemTemplate;
             this.DropDownListView.ItemsSource = objects;
+
+            // List properties
+            this.DropDownListView.MinimumHeightRequest = this.RowHeight;
 
             // The grid that's shown as popup on DisplayPopup
             this.DropDownGrid.Children.Add(this.DropDownListView);

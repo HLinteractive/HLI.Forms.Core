@@ -17,12 +17,12 @@ namespace HLI.Forms.Core.Controls
 {
     /// <summary>
     ///     <para>
-    ///         A view that displays <see cref="UnfocusedView" /> when unfocused and <see cref="FocusedPage" /> when the user
+    ///         A view that displays <see cref="UnfocusedView" /> when unfocused and <see cref="focusedPage" /> when the user
     ///         is
     ///         editing.
     ///     </para>
-    ///     <para>The <see cref="FocusedPage" /> has a <see cref="CloseButton" /> you can customize.</para>
-    ///     <para>There is also a <see cref="OnClosed" /> event and <see cref="ClosedCommand"/> you can subscribe to.</para>
+    ///     <para>The <see cref="focusedPage" /> has a <see cref="CloseView" /> you can customize.</para>
+    ///     <para>There is also a <see cref="OnClosed" /> event and <see cref="ClosedCommand" /> you can subscribe to.</para>
     /// </summary>
     public class HliPlaceholderView : ContentView
     {
@@ -31,8 +31,10 @@ namespace HLI.Forms.Core.Controls
         /// <summary>
         ///     See <see cref="ClosedCommand" />
         /// </summary>
-        public static readonly BindableProperty ClosedCommandProperty =
-            BindableProperty.Create(nameof(ClosedCommand), typeof(ICommand), typeof(HliPlaceholderView));
+        public static readonly BindableProperty ClosedCommandProperty = BindableProperty.Create(
+            nameof(ClosedCommand),
+            typeof(ICommand),
+            typeof(HliPlaceholderView));
 
         #endregion
 
@@ -45,12 +47,9 @@ namespace HLI.Forms.Core.Controls
 
         private readonly ContentView placeHolderView = new ContentView();
 
-        private View closeButton;
+        private  readonly ContentView focusedView = new ContentView();
 
-        /// <summary>
-        ///     Determines if the model is currently open
-        /// </summary>
-        private bool isModalOpen;
+        private View closeView;
 
         #endregion
 
@@ -60,7 +59,7 @@ namespace HLI.Forms.Core.Controls
         {
             this.LoadAppResources();
             this.Content = this.placeHolderView;
-            this.CloseButton = new Button { Text = "Ok" };
+            this.CloseView = new Button { Text = "Ok" };
         }
 
         #endregion
@@ -68,15 +67,15 @@ namespace HLI.Forms.Core.Controls
         #region Public Properties
 
         /// <summary>
-        ///     The close button (view) used to dismiss the modal. Default is a Button with the text "Ok".
+        ///     Gets or sets the <see cref="View"/> used to dismiss the modal. Default is a Button with the text "Ok".
         /// </summary>
-        public View CloseButton
+        public View CloseView
         {
-            get => this.closeButton;
+            get => this.closeView;
 
             set
             {
-                if (value == null || value == this.closeButton)
+                if (value == null || value == this.closeView)
                 {
                     return;
                 }
@@ -85,15 +84,15 @@ namespace HLI.Forms.Core.Controls
                 value.Margin = new Thickness(5);
                 value.VerticalOptions = LayoutOptions.End;
 
-                this.closeButton = value;
+                this.closeView = value;
 
                 // Attach the close/open event
-                this.closeButton.AddTapGestureRecognizer(this.OnCloseOpenTapped);
+                this.closeView.AddTapGestureRecognizer(this.OnCloseOpenTapped);
             }
         }
 
         /// <summary>
-        ///     Command that is called when the modal is closed. Bindable.
+        ///     Gets or sets the <see cref="Command"/> that is called when the modal is closed. Bindable property.
         /// </summary>
         public ICommand ClosedCommand
         {
@@ -103,9 +102,26 @@ namespace HLI.Forms.Core.Controls
         }
 
         /// <summary>
-        ///     The <see cref="ContentPage" /> displayed as modal. Remarks: there is no default padding  / margin.
+        ///     The <see cref="ContentPage" /> displayed modally.
         /// </summary>
-        public ContentPage FocusedPage { get; set; } = new ContentPage();
+        private ContentPage focusedPage;
+
+        /// <summary>
+        /// Gets or sets the <see cref="View"/> displayed modally
+        /// </summary>
+        public View FocusedView
+        {
+            get => this.focusedView.Content;
+            set
+            {
+                if (this.focusedView.Content == value || value == null)
+                {
+                    return;
+                }
+
+                this.focusedView.Content = value;
+            }
+        }
 
         /// <summary>
         ///     The view displayed as placeholder
@@ -129,6 +145,15 @@ namespace HLI.Forms.Core.Controls
 
         #endregion
 
+        #region Properties
+
+        /// <summary>
+        ///     Determines if the model is currently open
+        /// </summary>
+        private bool IsModalOpen => this.Navigation.ModalStack.Contains(this.focusedPage);
+
+        #endregion
+
         #region Public Methods and Operators
 
         /// <summary>
@@ -137,13 +162,14 @@ namespace HLI.Forms.Core.Controls
         /// <returns>Awaitable Task</returns>
         public async Task CloseModal()
         {
-            if (this.Navigation.ModalStack.Any())
+            if (!this.IsModalOpen)
             {
-                await this.Navigation.PopModalAsync();
-                this.isModalOpen = false;
-                this.OnClosed?.Invoke();
-                this.ClosedCommand?.Execute(null);
+                return;
             }
+
+            await this.Navigation.PopModalAsync();
+            this.OnClosed?.Invoke();
+            this.ClosedCommand?.Execute(null);
         }
 
         /// <summary>
@@ -152,13 +178,13 @@ namespace HLI.Forms.Core.Controls
         /// <returns>Awaitable Task</returns>
         public async Task OpenModal()
         {
-            if (this.Navigation.ModalStack.Any())
+            if (this.IsModalOpen)
             {
                 return;
             }
 
-            await this.Navigation.PushModalAsync(this.CreateModalPage());
-            this.isModalOpen = true;
+            this.CreateFocusedPage();
+            await this.Navigation.PushModalAsync(this.focusedPage);
         }
 
         #endregion
@@ -192,7 +218,8 @@ namespace HLI.Forms.Core.Controls
                 var button = view as Button;
                 if (entry != null)
                 {
-                    entry.IsEnabled = false;
+                    entry.Focused -= this.OnCloseOpenTapped;
+                    entry.Focused += this.OnCloseOpenTapped;
                 }
 
                 if (button != null)
@@ -208,44 +235,41 @@ namespace HLI.Forms.Core.Controls
         }
 
         /// <summary>
-        ///     Generates the page that is displayed as a modal popup.
+        ///     Generates the page that is displayed as a modal popup: <see cref="focusedPage" />
         /// </summary>
         /// <returns>A new page</returns>
-        private ContentPage CreateModalPage()
+        private void CreateFocusedPage()
         {
-            var page = this.FocusedPage ?? new ContentPage();
+            // Populate the page that's shown as "drop down"
+            var page = new ContentPage();
 
             try
             {
-                // Capture page content
-                var pageContent = page.Content;
                 page.LoadResourcesFromApp();
-                page.Content = null;
 
                 // Create new content with the close button
                 var stack = new StackLayout { VerticalOptions = LayoutOptions.FillAndExpand };
-                stack.Children.Add(pageContent);
-                stack.Children.Add(this.closeButton);
+                stack.Children.Add(this.focusedView);
+                stack.Children.Add(this.closeView);
 
                 // Re-populate the page and inherit BindingContext
                 page.Content = stack;
                 page.BindingContext = this.BindingContext;
+                this.focusedPage = page;
             }
             catch (Exception ex)
             {
                 ex.WriteDebug();
             }
-
-            return page;
         }
 
         /// <summary>
-        ///     Occurs when the user taps the view to open modal or taps <see cref="CloseButton" />
+        ///     Occurs when the user taps the view to open modal or taps <see cref="CloseView" />
         /// </summary>
         private async void OnCloseOpenTapped(object sender, EventArgs eventArgs)
         {
             // Is the modal open?
-            if (this.isModalOpen)
+            if (this.IsModalOpen)
             {
                 // Close the model
                 await this.CloseModal();

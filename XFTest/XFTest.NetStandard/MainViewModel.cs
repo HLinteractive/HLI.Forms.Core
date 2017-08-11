@@ -5,26 +5,38 @@
 // // --------------------------------------------------------------------------------------------------------------------
 
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
+
+using HLI.Core.Models;
 
 namespace XFTest.NetStandard
 {
-    public class MainViewModel : INotifyPropertyChanged
+    public class MainViewModel : NotificationObject
     {
         #region Fields
+
+        private string busyReason = "Loading...";
+
+        private bool isBusy;
 
         private Planet selectedItem;
 
         #endregion
 
-        #region Public Events
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        #endregion
-
         #region Public Properties
+
+        public string BusyReason
+        {
+            get => this.busyReason;
+
+            set => this.SetProperty(ref this.busyReason, value);
+        }
+
+        public bool IsBusy
+        {
+            get => this.isBusy;
+
+            set => this.SetProperty(ref this.isBusy, value);
+        }
 
         public List<Planet> Models => new List<Planet>
                                           {
@@ -87,20 +99,7 @@ namespace XFTest.NetStandard
         public Planet SelectedItem
         {
             get => this.selectedItem;
-            set
-            {
-                this.selectedItem = value;
-                this.RaisePropertyChanged();
-            }
-        }
-
-        #endregion
-
-        #region Methods
-
-        protected virtual void RaisePropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            set => this.SetProperty(ref this.selectedItem, value);
         }
 
         #endregion

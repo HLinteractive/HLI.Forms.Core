@@ -10,7 +10,7 @@ namespace XFTest.NetStandard
     {
         #region Constants
 
-        private const string Thumbnailpath = "revision/latest/scale-to-width-down/100";
+        private const string ThumbnailSuffix = "scale-to-width-down/50";
 
         #endregion
 
@@ -39,7 +39,7 @@ namespace XFTest.NetStandard
 
         public string Name { get; set; }
 
-        public string Thumbnail => this.Image + Thumbnailpath;
+        public string Thumbnail => this.Image + ThumbnailSuffix;
 
         #endregion
     }

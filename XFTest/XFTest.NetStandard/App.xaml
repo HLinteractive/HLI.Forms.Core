@@ -6,6 +6,8 @@
     <Application.Resources>
 
         <!--  Application resource dictionary  -->
-
+        <ResourceDictionary>
+            <ImageSourceConverter x:Key="ImageSourceConverter" />
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

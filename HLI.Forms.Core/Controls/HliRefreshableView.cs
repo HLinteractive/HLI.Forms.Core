@@ -70,6 +70,26 @@ namespace HLI.Forms.Core.Controls
             typeof(HliRefreshableView),
             200);
 
+        /// <summary>
+        ///     See <see cref="IsBusyMemberPath" />
+        /// </summary>
+        public static readonly BindableProperty IsBusyMemberPathProperty = BindableProperty.Create(
+            nameof(IsBusyMemberPath),
+            typeof(string),
+            typeof(HliRefreshableView),
+            "IsBusy",
+            propertyChanged: OnIsBusyMemberPathChanged);
+
+        /// <summary>
+        ///     See IsBusyReason
+        /// </summary>
+        public static readonly BindableProperty IsBusyReasonProperty = BindableProperty.Create(
+            nameof(BusyReasonMemberPath),
+            typeof(string),
+            typeof(HliRefreshableView),
+            "BusyReason",
+            propertyChanged: OnIsBusyMemberPathChanged);
+
         #endregion
 
         #region Fields
@@ -88,6 +108,26 @@ namespace HLI.Forms.Core.Controls
         #endregion
 
         #region Public Properties
+
+        /// <summary>
+        ///     Path to the busy <c>boolean</c> property in the binding context. Default value is "BusyReason". Bindable property.
+        /// </summary>
+        public string BusyReasonMemberPath
+        {
+            get => (string)this.GetValue(IsBusyReasonProperty);
+
+            set => this.SetValue(IsBusyReasonProperty, value);
+        }
+
+        /// <summary>
+        ///     Path to the busy <c>boolean</c> property in the binding context. Default value is "IsBusy". Bindable property.
+        /// </summary>
+        public string IsBusyMemberPath
+        {
+            get => (string)this.GetValue(IsBusyMemberPathProperty);
+
+            set => this.SetValue(IsBusyMemberPathProperty, value);
+        }
 
         /// <summary>
         ///     Determines if the view is scrollable. Default is <c>false</c>
@@ -158,6 +198,17 @@ namespace HLI.Forms.Core.Controls
 
         #endregion
 
+        private static void OnIsBusyMemberPathChanged(BindableObject bindable, object oldValue, object newValue)
+        {
+            var view = bindable.AsType<HliRefreshableView>();
+            if (oldValue == newValue || newValue == null || newValue is string == false)
+            {
+                return;
+            }
+
+            view.CreateContent();
+        }
+
         /// <summary>
         ///     Populates the content of this view from <see cref="ViewContent" />
         /// </summary>
@@ -191,7 +242,7 @@ namespace HLI.Forms.Core.Controls
             busyPanel.RowDefinitions.Add(new RowDefinition());
             busyPanel.RowDefinitions.Add(new RowDefinition());
             busyPanel.RowDefinitions.Add(new RowDefinition());
-            busyPanel.SetBinding(IsVisibleProperty, "IsBusy", BindingMode.OneWay);
+            busyPanel.SetBinding(IsVisibleProperty, this.IsBusyMemberPath, BindingMode.OneWay);
 
             // Activity indicator
             var busyStack = new StackLayout();
@@ -215,7 +266,7 @@ namespace HLI.Forms.Core.Controls
                                     FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
                                     HorizontalOptions = LayoutOptions.Center
                                 };
-            busyLabel.SetBinding(Label.TextProperty, "BusyReason", BindingMode.OneWay);
+            busyLabel.SetBinding(Label.TextProperty, this.BusyReasonMemberPath, BindingMode.OneWay);
 
             busyStack.Children.Add(activityView);
             busyStack.Children.Add(busyLabel);
