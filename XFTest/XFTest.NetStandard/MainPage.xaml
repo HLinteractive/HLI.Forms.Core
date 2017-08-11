@@ -81,7 +81,8 @@
                 DisplayMemberPath="Name"
                 ItemsSource="{Binding Models}"
                 RowHeight="50"
-                SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
+                SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+                SelectedMemberPath="Name">
                 <hli:HliComboBox.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>

@@ -377,9 +377,9 @@ namespace HLI.Forms.Core.Controls
 
             set => this.SetValue(RowHeightProperty, value);
         }
-        
+
         /// <summary>
-        /// The amount of spacing between rows in the combobox. Default value is 10. Bindable property.
+        ///     The amount of spacing between rows in the combobox. Default value is 10. Bindable property.
         /// </summary>
         public new float RowSpacing
         {
@@ -409,8 +409,8 @@ namespace HLI.Forms.Core.Controls
         }
 
         /// <summary>
-        ///     Template for the "selected" area. BindingContext is <see cref="SelectedItem" />. Defaults to
-        ///     <see cref="ItemTemplate" />. Bindable property.
+        ///     Template for the "selected" area. BindingContext is <see cref="SelectedItem" />. By default set to a
+        ///     <see cref="Label" /> bound to <see cref="SelectedMemberPath" />. Bindable property.
         /// </summary>
         public DataTemplate SelectedItemTemplate
         {
@@ -460,17 +460,17 @@ namespace HLI.Forms.Core.Controls
                 return;
             }
 
-            var cell = this.SelectedItemTemplate.CreateContent() as Cell;
-            if (cell == null)
-            {
-                throw new Exception($"{nameof(this.SelectedItemTemplate)} expected to be a DataTemplate containing a Cell");
-            }
-
-            var view = cell.Parent as View;
+            var view = this.SelectedItemTemplate.CreateContent() as View;
             if (view == null)
             {
-                return;
+                throw new Exception($"{nameof(this.SelectedItemTemplate)} expected to be a View");
             }
+
+            ////var view = cell.Parent as View;
+            ////if (view == null)
+            ////{
+            ////    return;
+            ////}
 
             view.BindingContext = this.SelectedItem;
             view.HorizontalOptions = LayoutOptions.StartAndExpand;
@@ -629,13 +629,8 @@ namespace HLI.Forms.Core.Controls
                 return;
             }
 
-            // Set SelectedItemTemplate to the same value if not set
             var comboBox = bindable.AsType<HliComboBox>();
-            // (comboBox.ItemTemplate == default(DataTemplate))
-            {
-                comboBox.ItemTemplate = (DataTemplate)newValue;
-            }
-
+            comboBox.ItemTemplate = (DataTemplate)newValue;
             comboBox.CreateChildren();
         }
 
