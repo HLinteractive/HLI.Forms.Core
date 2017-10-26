@@ -1,24 +1,55 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFramework>netstandard1.4</TargetFramework>
+    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
     <PackageTargetFallback>portable-net45+win8+wpa81+wp8</PackageTargetFallback>
     <DebugType>full</DebugType>
+    <Authors>Thomas Hagström, HL Interactive</Authors>
+    <Company>HL interactive</Company>
+    <GenerateAssemblyConfigurationAttribute>true</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <Description>Test of Netstandard/PCL/Win10 Xamarin.Forms views, converters, pages and services such as bindable picker and a modal view</Description>
+    <Copyright>Copyright © HL Interactive 2017 Stockholm Sweden</Copyright>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Product>$(AssemblyName) ($(TargetFramework))</Product>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <Version>1.0.0</Version>
+    <GenerateDocumentationFile Condition=" '$(Configuration)' == 'Release' ">true</GenerateDocumentationFile>
+    <IncludeSymbols>true</IncludeSymbols>
   </PropertyGroup>
-
+  <!-- NetStandard facade for PCL compatibility
+  https://oren.codes/2017/01/04/multi-targeting-the-world-a-single-project-to-rule-them-all/#windows-example
+  -->
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard1.0'">
+    <DefineConstants>$(DefineConstants);PCL</DefineConstants>
+  </PropertyGroup>
   <ItemGroup>
-    <EmbeddedResource Include="App.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MainPage.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
+    <None Include="Platforms\**\*.cs;Resources\**\*.*" />
+    <EmbeddedResource Include="**\*.resx" />
   </ItemGroup>
-
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
+  </ItemGroup>
+  <Target Name="AdjustReferringTargetFrameworkForUAP" BeforeTargets="GetTargetFrameworkProperties">
+    <PropertyGroup Condition="'$(ReferringTargetFramework)' == '.NETCore,Version=v5.0'">
+      <ReferringTargetFramework>UAP,Version=v10.0</ReferringTargetFramework>
+    </PropertyGroup>
+  </Target>
   <ItemGroup>
-    <PackageReference Include="HLI.Core" Version="1.0.6-beta" />
-    <PackageReference Include="Xamarin.Forms" Version="2.3.4.247" />
+    <Compile Remove="obj\Debug\**" />
+    <EmbeddedResource Remove="obj\Debug\**" />
+    <None Remove="obj\Debug\**" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="obj\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="HLI.Core" Version="1.0.6" />
+    <PackageReference Include="System.Linq.Expressions" Version="4.3.0" />
+    <PackageReference Include="System.Linq.Queryable" Version="4.3.0" />
+    <PackageReference Include="Xamarin.Forms" Version="2.4.0.18342" />
+  </ItemGroup>
+  <!--<ItemGroup>
+    <PackageReference Include="NETStandard.Library" Condition="'$(TargetFramework)' != 'net45'" Version="1.6.1" />
+  </ItemGroup>-->
 
   <ItemGroup>
     <ProjectReference Include="..\..\HLI.Forms.Core\HLI.Forms.Core.csproj" />

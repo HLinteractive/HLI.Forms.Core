@@ -7,21 +7,20 @@
     <Company>HL interactive</Company>
     <GenerateAssemblyConfigurationAttribute>true</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
-    <Description>Netstandard/PCL/Win10 Xamarin.Forms views, converters, pages and services such as bindable picker and a modal view</Description>
+    <Description>Netstandard 2.0 Xamarin.Forms views, converters, pages and services such as bindable picker and a modal view</Description>
     <Copyright>Copyright © HL Interactive 2017 Stockholm Sweden</Copyright>
-    <PackageReleaseNotes>Multi-target PCL / UAP 10 / NetStandard 1.4 using VS2017 CSPROJ
-Updated HLI.Core</PackageReleaseNotes>
+    <PackageReleaseNotes>Added ViewBehaviors and View Extensions</PackageReleaseNotes>
     <PackageIconUrl>https://dl.dropboxusercontent.com/u/1027259/hliicon.ico</PackageIconUrl>
     <RepositoryUrl>https://github.com/HLinteractive/HLI.Forms.Core.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageProjectUrl>https://github.com/HLinteractive/HLI.Forms.Core</PackageProjectUrl>
-    <TargetFrameworks>netstandard1.4;uap10.0;portable-win81+wpa81;</TargetFrameworks>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
     <DefaultLanguage>en-US</DefaultLanguage>
     <PackageLicenseUrl>https://raw.githubusercontent.com/HLinteractive/HLI.Forms.Core/master/LICENSE</PackageLicenseUrl>
     <PackageTags>xamarin,xamarin-forms,views,controls,modal,picker,dropdown,bindable-components,xaml,netstandard,pcl</PackageTags>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <GenerateDocumentationFile Condition=" '$(Configuration)' == 'Release' ">true</GenerateDocumentationFile>
     <IncludeSymbols>false</IncludeSymbols>
   </PropertyGroup>
@@ -31,39 +30,11 @@ Updated HLI.Core</PackageReleaseNotes>
   <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard1.0'">
     <DefineConstants>$(DefineConstants);PCL</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)' == 'portable-win81+wpa81'">
-    <TargetFrameworkIdentifier>.NETPortable</TargetFrameworkIdentifier>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Profile32</TargetFrameworkProfile>
-    <NugetTargetMoniker>.NETPortable,Version=v0.0,Profile=Profile32</NugetTargetMoniker>
-    <LanguageTargets>$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets</LanguageTargets>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)' == 'uap10.0'">
-    <NugetTargetMoniker>UAP,Version=v10.0</NugetTargetMoniker>
-    <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion>10.0.15063.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.10568.0</TargetPlatformMinVersion>
-    <TargetFrameworkIdentifier>.NETCore</TargetFrameworkIdentifier>
-    <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
-    <DefineConstants>$(DefineConstants);WINDOWS_UWP</DefineConstants>
-    <LanguageTargets>$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets</LanguageTargets>
-  </PropertyGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' == 'portable-win81+wpa81' ">
-    <TargetPlatform Include="Windows, Version=8.1" />
-    <TargetPlatform Include="WindowsPhoneApp, Version=8.1" />
-  </ItemGroup>
   <ItemGroup>
     <None Include="Platforms\**\*.cs;Resources\**\*.*" />
     <EmbeddedResource Include="**\*.resx" />
   </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.4' ">
-  </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0' or '$(TargetFramework)' == 'wpa81' or '$(TargetFramework)' == 'win8' or '$(TargetFramework)' == 'portable-win81+wpa81' or '$(TargetFramework)' == 'wp8' ">    
-  </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">    
-  </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0' ">
-    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform " Version="5.2.2" />
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
   </ItemGroup>
   <Target Name="AdjustReferringTargetFrameworkForUAP" BeforeTargets="GetTargetFrameworkProperties">
     <PropertyGroup Condition="'$(ReferringTargetFramework)' == '.NETCore,Version=v5.0'">
@@ -82,9 +53,9 @@ Updated HLI.Core</PackageReleaseNotes>
     <PackageReference Include="HLI.Core" Version="1.0.6" />
     <PackageReference Include="System.Linq.Expressions" Version="4.3.0" />
     <PackageReference Include="System.Linq.Queryable" Version="4.3.0" />
-    <PackageReference Include="Xamarin.Forms" Version="2.3.4.247" />
+    <PackageReference Include="Xamarin.Forms" Version="2.4.0.18342" />
   </ItemGroup>
-  <ItemGroup>
+  <!--<ItemGroup>
     <PackageReference Include="NETStandard.Library" Condition="'$(TargetFramework)' != 'net45'" Version="1.6.1" />
-  </ItemGroup>
+  </ItemGroup>-->
 </Project>

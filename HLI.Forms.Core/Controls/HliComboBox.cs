@@ -1,161 +1,277 @@
-﻿// // // --------------------------------------------------------------------------------------------------------------------
-// // // <copyright file="HLI.Forms.HliComboBox.cs" company="Sogeti Sverige AB">
-// // //   Copyright © Sogeti Sverige AB, 2016
-// // // </copyright>
-// // // --------------------------------------------------------------------------------------------------------------------
+﻿// // --------------------------------------------------------------------------------------------------------------------
+// // <copyright file="HLI.Forms.Core.HliComboBox.cs" company="HL Interactive">
+// //   Copyright © HL Interactive, Stockholm, Sweden, 2017
+// // </copyright>
+// // --------------------------------------------------------------------------------------------------------------------
 
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Windows.Input;
 
 using HLI.Core.Extensions;
 using HLI.Forms.Core.Extensions;
+using HLI.Forms.Core.Services;
 
 using Xamarin.Forms;
 
+[assembly: InternalsVisibleTo("XFTest.NetStandard")]
+
 namespace HLI.Forms.Core.Controls
 {
-    /// <remarks>
-    ///     <para>Based on bindable picker written by Simon Villiard</para>
-    ///     <para>https://forums.xamarin.com/discussion/30801/xamarin-forms-bindable-picker</para>
-    /// </remarks>
+    /// <inheritdoc />
     /// <summary>
-    ///     <para>Allows binding a <see cref="Picker" /> to an <see cref="ItemsSource" /> of objects.</para>
-    ///     <para>Customize using <see cref="DisplayMemberpath" /> with <see cref="SelectedValuePath" />.</para>
-    ///     <para>Get/set the whole selected object using <see cref="SelectedItem"/></para>
+    ///     Custom combo pox with <see cref="Placeholder" />, <see cref="ItemsSource" /> and optional
+    ///     <see cref="ItemTemplate" />.
     /// </summary>
-    public class HliComboBox : Picker
+    /// <seealso cref="HliAutoComplete" />
+    /// <seealso cref="HliBindablePicker" />
+    /// <example>
+    ///     <code lang="XAML"><![CDATA[
+    /// <hli:HliComboBox DisplayMemberPath="Name" ItemsSource="{Binding Models}" SelectedItem="{Binding SelectedItem, Mode=TwoWay}" 
+    ///     ]]></code>
+    /// </example>
+    /// <remarks>"Drop down" in this view referes to content displayed as a modal using Xamarin Navigation</remarks>
+    public class HliComboBox : Grid
     {
         #region Static Fields
 
         /// <summary>
-        ///     Source of business objects
+        ///     See <see cref="Placeholder" />
         /// </summary>
-        public new static readonly BindableProperty ItemsSourceProperty = BindableProperty.Create(
+        public static readonly BindableProperty PlaceholderProperty = BindableProperty.Create(
+            nameof(Placeholder),
+            typeof(string),
+            typeof(HliComboBox),
+            "Select",
+            propertyChanged: OnPlaceholderChanged);
+
+        /// <summary>
+        ///     See <see cref="IsDropdownVisible" />
+        /// </summary>
+        public static readonly BindableProperty IsDropdownVisibleProperty = BindableProperty.Create(
+            nameof(IsDropdownVisible),
+            typeof(bool),
+            typeof(HliComboBox),
+            false,
+            propertyChanged: OnIsDropdownVisibleChanged);
+
+        /// <summary>
+        ///     See <see cref="ItemsSource" />
+        /// </summary>
+        public static readonly BindableProperty ItemsSourceProperty = BindableProperty.Create(
             nameof(ItemsSource),
             typeof(IEnumerable),
             typeof(HliComboBox),
-            null,
-            BindingMode.OneWay,
-            propertyChanged: OnItemsSourcePropertyChanged);
+            propertyChanged: OnItemsSourceChanged);
 
         /// <summary>
-        ///     The display memberpath property.
+        ///     See <see cref="SelectedItem" />
         /// </summary>
-        public static readonly BindableProperty DisplayMemberpathProperty = BindableProperty.Create(
-            nameof(DisplayMemberpath),
-            typeof(string),
-            typeof(HliComboBox),
-            null,
-            BindingMode.OneWay,
-            propertyChanged: (bindable, oldValue, newValue) =>
-                {
-                    if (oldValue != newValue)
-                    {
-                        BindablePropertyChanged(bindable, ComboBoxProperty.DisplayMemberPath);
-                    }
-                });
-
-        /// <summary>
-        ///     Gets or sets the selected item (business object)
-        /// </summary>
-        public new static readonly BindableProperty SelectedItemProperty = BindableProperty.Create(
+        public static readonly BindableProperty SelectedItemProperty = BindableProperty.Create(
             nameof(SelectedItem),
             typeof(object),
             typeof(HliComboBox),
             null,
-            BindingMode.TwoWay,
-            propertyChanged: (bindable, oldValue, newValue) =>
-                {
-                    if (oldValue != newValue)
-                    {
-                        BindablePropertyChanged(bindable, ComboBoxProperty.SelectedItem);
-                    }
-                });
+            propertyChanged: OnSelectedItemChanged);
 
         /// <summary>
-        ///     Name of the property that will populate <see cref="SelectedValue" />
+        ///     See <see cref="ItemTemplate" />
         /// </summary>
-        public static readonly BindableProperty SelectedValuePathProperty = BindableProperty.Create(
-            nameof(SelectedValuePath),
-            typeof(string),
-            typeof(HliComboBox));
-
-        /// <summary>
-        ///     The selected value, specified by <see cref="SelectedValuePath" />
-        /// </summary>
-        public static readonly BindableProperty SelectedValueProperty = BindableProperty.Create(
-            nameof(SelectedValue),
-            typeof(object),
+        public static readonly BindableProperty ItemTemplateProperty = BindableProperty.Create(
+            nameof(ItemTemplate),
+            typeof(DataTemplate),
             typeof(HliComboBox),
-            null,
-            BindingMode.TwoWay,
-            propertyChanged: (bindable, oldValue, newValue) =>
-                {
-                    if (oldValue != newValue)
-                    {
-                        BindablePropertyChanged(bindable, ComboBoxProperty.SelectedValue);
-                    }
-                });
+            propertyChanged: OnItemTemplateChanged);
+
+        /// <summary>
+        ///     See <see cref="DisplayMemberPath" />
+        /// </summary>
+        public static readonly BindableProperty DisplayMemberPathProperty = BindableProperty.Create(
+            nameof(DisplayMemberPath),
+            typeof(string),
+            typeof(HliComboBox),
+            propertyChanged: OnDisplayMemberPathChanged);
+
+        /// <summary>
+        ///     See <see cref="RowHeight" />
+        /// </summary>
+        public static readonly BindableProperty RowHeightProperty = BindableProperty.Create(
+            nameof(RowHeight),
+            typeof(int),
+            typeof(HliComboBox),
+            30,
+            propertyChanged: OnRowHeightChanged);
+
+        /// <summary>
+        ///     See <see cref="SelectedItemHeight" />
+        /// </summary>
+        public static readonly BindableProperty SelectedItemHeightProperty = BindableProperty.Create(
+            nameof(SelectedItemHeight),
+            typeof(double),
+            typeof(HliComboBox),
+            30d);
+
+        /// <summary>
+        ///     See <see cref="SelectedMemberPath" />
+        /// </summary>
+        public static readonly BindableProperty SelectedMemberPathProperty = BindableProperty.Create(
+            nameof(SelectedMemberPath),
+            typeof(string),
+            typeof(HliComboBox),
+            propertyChanged: OnSelectedMemberPathChanged);
+
+        /// <summary>
+        ///     See <see cref="RowHeight" />
+        /// </summary>
+        public static readonly BindableProperty HasContentBorderProperty = BindableProperty.Create(
+            nameof(HasContentBorder),
+            typeof(bool),
+            typeof(HliComboBox),
+            true,
+            propertyChanged: OnHasContentBorderChanged);
+
+        /// <summary>
+        ///     See <see cref="HasDropDownArrow" />
+        /// </summary>
+        public static readonly BindableProperty HasDropDownArrowProperty = BindableProperty.Create(
+            nameof(HasDropDownArrow),
+            typeof(bool),
+            typeof(HliComboBox),
+            true,
+            propertyChanged: OnHasDropDownArrowChanged);
+
+        /// <summary>
+        ///     See <see cref="SelectedItemTemplate" />
+        /// </summary>
+        public static readonly BindableProperty SelectedItemTemplateProperty = BindableProperty.Create(
+            nameof(SelectedItemTemplate),
+            typeof(DataTemplate),
+            typeof(HliComboBox),
+            propertyChanged: OnSelectedItemTemplateChanged);
+
+        /// <summary>
+        ///     See <see cref="CloseButtonText" />
+        /// </summary>
+        public static readonly BindableProperty CloseButtonTextProperty = BindableProperty.Create(
+            nameof(CloseButtonText),
+            typeof(string),
+            typeof(HliComboBox),
+            propertyChanged: OnCloseButtonTextChanged);
+
+        /// <summary>
+        ///     See <see cref="CloseButtonText" />
+        /// </summary>
+        public static readonly BindableProperty CloseCommandProperty = BindableProperty.Create(
+            nameof(CloseCommand),
+            typeof(ICommand),
+            typeof(HliComboBox));
 
         #endregion
 
         #region Fields
 
         /// <summary>
-        ///     The source dictionary.
+        ///     Closes the drop down
         /// </summary>
-        private Dictionary<object, object> sourceDictionary;
+        protected readonly Button CloseButton = new Button { Text = "Close" };
+
+        /// <summary>
+        ///     The grid displayed around <see cref="DropDownListView" />
+        /// </summary>
+        protected readonly Grid DropDownGrid = new Grid { VerticalOptions = LayoutOptions.Start, Margin = new Thickness(0, -1, 0, 0), Padding = 2 };
+
+        /// <summary>
+        ///     The listview displayed as a "dropdown" or "popup"
+        /// </summary>
+        protected readonly ListView DropDownListView = new ListView
+                                                           {
+                                                               BackgroundColor = Color.White,
+                                                               HasUnevenRows = false,
+                                                               SeparatorColor = Color.Transparent,
+                                                               SeparatorVisibility = SeparatorVisibility.None,
+                                                               IsPullToRefreshEnabled = false,
+                                                               Margin = 4
+                                                           };
+
+        /// <summary>
+        ///     Inner grid for selected item, with <see cref="SelectedItemTemplate" /> as child when <see cref="CreateChildren" />
+        ///     has been called.
+        /// </summary>
+        protected readonly Grid SelectedUserContentGrid = new Grid();
+
+        private readonly Label dropDownArrowLabel = new Label { Text = "▼", TextColor = Color.Gray, Margin = new Thickness(4) };
+
+        /// <summary>
+        ///     The border displayed around <see cref="userContentGrid" /> if <see cref="HasContentBorder" /> is true.
+        /// </summary>
+        private readonly Grid selectedBorderGrid = new Grid { BackgroundColor = Color.Gray, Padding = 2 };
+
+        /// <summary>
+        ///     Outer grid for selected item. Has two columns (*, Auto) and background: White.
+        /// </summary>
+        private readonly Grid selectedColumnsGrid = new Grid { BackgroundColor = Color.White };
+
+        /// <summary>
+        ///     The main grid where <see cref="SelectedItemTemplate" /> is displayed.
+        /// </summary>
+        private readonly Grid userContentGrid = new Grid();
+
+        /// <summary>
+        ///     Page that's shown as "drop down" (in reality a modal)
+        /// </summary>
+        private ContentPage dropDownPage;
+
+        private View itemView;
 
         #endregion
 
         #region Constructors and Destructors
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="HliComboBox" /> class.
-        /// </summary>
         public HliComboBox()
         {
-            this.LoadAppResources();
-            this.SelectedIndexChanged += this.OnSelectedIndexChanged;
-        }
+            this.MinimumHeightRequest = this.SelectedItemHeight;
+            this.userContentGrid.MinimumHeightRequest = this.SelectedItemHeight;
+            this.CloseButton.Clicked += (sender, args) => this.IsDropdownVisible = false;
 
-        #endregion
+            // Rows 0 = "selected item" area
+            this.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 
-        #region Enums
+            // Rows 1: listview
+            this.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+            this.RowSpacing = 0;
 
-        /// <summary>
-        ///     Properties in this class
-        /// </summary>
-        private enum ComboBoxProperty
-        {
-            /// <summary>
-            ///     The selected index.
-            /// </summary>
-            SelectedIndex,
+            // Bind selected item
+            this.DropDownListView.SetBinding(ListView.SelectedItemProperty, new Binding("SelectedItem", BindingMode.TwoWay));
 
-            /// <summary>
-            ///     The selected item.
-            /// </summary>
-            SelectedItem,
+            this.DropDownListView.ItemSelected -= this.OnItemSelected;
+            this.DropDownListView.ItemSelected += this.OnItemSelected;
 
-            /// <summary>
-            ///     The selected value.
-            /// </summary>
-            SelectedValue,
+            this.DropDownListView.BindingContext = this;
+            this.DropDownGrid.BindingContext = this;
 
-            /// <summary>
-            ///     The display member path.
-            /// </summary>
-            DisplayMemberPath,
+            // GRID 1: Outer selected border grid
+            this.selectedBorderGrid.Padding = this.HasContentBorder ? 2 : 0;
+            this.selectedBorderGrid.BackgroundColor = this.HasContentBorder ? Color.Gray : Color.Transparent;
 
-            // ReSharper disable once UnusedMember.Local - kept for consistency
-            /// <summary>
-            ///     The selected value path.
-            /// </summary>
-            SelectedValuePath
+            // GRID 2: "Columns" grid
+            this.selectedColumnsGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star });
+            this.selectedColumnsGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+
+            // Column 0: User Content
+            this.SelectedUserContentGrid.AddTapGestureRecognizer(this.OnSelectedItemTapped);
+            this.selectedColumnsGrid.Children.Add(this.SelectedUserContentGrid);
+
+            // Column 1: Drop down arrow
+            this.dropDownArrowLabel.SetBinding(IsVisibleProperty, nameof(this.HasDropDownArrow));
+            this.dropDownArrowLabel.BindingContext = this;
+            this.selectedColumnsGrid.Children.Add(this.dropDownArrowLabel);
+            this.dropDownArrowLabel.AddTapGestureRecognizer(this.OnSelectedItemTapped);
+            SetColumn(this.dropDownArrowLabel, 1);
+
+            this.selectedBorderGrid.Children.Add(this.selectedColumnsGrid);
+            this.selectedBorderGrid.AddTapGestureRecognizer(this.OnSelectedItemTapped);
         }
 
         #endregion
@@ -163,23 +279,71 @@ namespace HLI.Forms.Core.Controls
         #region Public Properties
 
         /// <summary>
-        ///     <para>Name of the property to display in the combo box selection drop down.</para>
-        ///     <para>For an IDictionary <see cref="ItemsSource" />, <see cref="DisplayMemberpath" /> defaults to "Quantity"</para>
+        ///     The text displayed in the "Close" button when selecting items. Default value is "Close". This is a bindable
+        ///     property.
         /// </summary>
-        public string DisplayMemberpath
+        public string CloseButtonText
         {
-            get => (string)this.GetValue(DisplayMemberpathProperty);
+            get => this.GetValue(CloseButtonTextProperty).ToString();
 
-            set => this.SetValue(DisplayMemberpathProperty, value);
+            set => this.SetValue(CloseButtonTextProperty, value);
         }
 
         /// <summary>
-        ///     Gets or sets the items source. Should be an implementation of IEnumerable, rather than the interface itself.
+        ///     Optional command executed when the user clicks on <see cref="CloseButton" />
         /// </summary>
-        /// <value>
-        ///     The items source.
-        /// </value>
-        public new IEnumerable ItemsSource
+        public ICommand CloseCommand
+        {
+            get => (ICommand)this.GetValue(CloseCommandProperty);
+
+            set => this.SetValue(CloseCommandProperty, value);
+        }
+
+        /// <summary>
+        ///     Creates <see cref="ItemTemplate" /> that binds to the specified path
+        /// </summary>
+        public string DisplayMemberPath
+        {
+            get => (string)this.GetValue(DisplayMemberPathProperty);
+
+            set => this.SetValue(DisplayMemberPathProperty, value);
+        }
+
+        /// <summary>
+        ///     Determines if a gray border is displayed around the main content (i.e like a combobox). Default is <c>True</c>
+        /// </summary>
+        public bool HasContentBorder
+        {
+            get => (bool)this.GetValue(HasContentBorderProperty);
+
+            set => this.SetValue(HasContentBorderProperty, value);
+        }
+
+        /// <summary>
+        ///     Determines if the view has an arrow to the far right indicating it's a drop down. Default is <c>True</c>
+        /// </summary>
+        public bool HasDropDownArrow
+        {
+            get => (bool)this.GetValue(HasDropDownArrowProperty);
+
+            set => this.SetValue(HasDropDownArrowProperty, value);
+        }
+
+        /// <summary>
+        ///     Determines if the drop down is visible. Default is <c>False</c>
+        /// </summary>
+        public bool IsDropdownVisible
+        {
+            get => (bool)this.GetValue(IsDropdownVisibleProperty);
+
+            set => this.SetValue(IsDropdownVisibleProperty, value);
+        }
+
+        /// <summary>
+        ///     An <see cref="IEnumerable" /> of objects.
+        /// </summary>
+        /// <seealso cref="ItemTemplate" />
+        public IEnumerable ItemsSource
         {
             get => (IEnumerable)this.GetValue(ItemsSourceProperty);
 
@@ -187,12 +351,68 @@ namespace HLI.Forms.Core.Controls
         }
 
         /// <summary>
-        ///     Gets or sets the selected item.
+        ///     A <see cref="ListView.ItemTemplate" />; expects a <see cref="DataTemplate" /> containing a <see cref="Cell" />
         /// </summary>
-        /// <value>
-        ///     The selected item.
-        /// </value>
-        public new object SelectedItem
+        /// <seealso cref="ItemsSource" />
+        public DataTemplate ItemTemplate
+        {
+            get => (DataTemplate)this.GetValue(ItemTemplateProperty);
+
+            set => this.SetValue(ItemTemplateProperty, value);
+        }
+
+        /// <summary>
+        ///     Gets or sets the <see cref="View" /> that will be displayed as <see cref="ItemTemplate" /> and
+        ///     <see cref="SelectedItemTemplate" />
+        /// </summary>
+        public View ItemView
+        {
+            get => this.itemView;
+
+            set
+            {
+                if (this.itemView == value || value == null) return;
+
+                this.itemView = value;
+                var template = value.DeepClone() as View;
+                if (template != null) this.ItemTemplate = new DataTemplate(() => new ViewCell { View = template });
+            }
+        }
+
+        /// <summary>
+        ///     Placeholder when there is no <see cref="SelectedItem" />. Default value is "Select"
+        /// </summary>
+        public string Placeholder
+        {
+            get => (string)this.GetValue(PlaceholderProperty);
+
+            set => this.SetValue(PlaceholderProperty, value);
+        }
+
+        /// <summary>
+        ///     Specifiers the height of each item in the drop down. Default value is <c>30</c>
+        /// </summary>
+        public int RowHeight
+        {
+            get => (int)this.GetValue(RowHeightProperty);
+
+            set => this.SetValue(RowHeightProperty, value);
+        }
+
+        /// <summary>
+        ///     The amount of spacing between rows in the combobox. Default value is 10. Bindable property.
+        /// </summary>
+        public new float RowSpacing
+        {
+            get => (float)this.GetValue(RowSpacingProperty);
+
+            set => this.SetValue(RowSpacingProperty, value);
+        }
+
+        /// <summary>
+        ///     Selected item for the <see cref="DropDownListView" />. Default value is <c>null</c>. Bindable property.
+        /// </summary>
+        public object SelectedItem
         {
             get => this.GetValue(SelectedItemProperty);
 
@@ -200,304 +420,338 @@ namespace HLI.Forms.Core.Controls
         }
 
         /// <summary>
-        ///     The selected value, specified by <see cref="SelectedValuePath" />
+        ///     The minimum height of the "selected" area. Default value is 30
         /// </summary>
-        public object SelectedValue
+        public double SelectedItemHeight
         {
-            get => this.GetValue(SelectedValueProperty);
+            get => (double)this.GetValue(SelectedItemHeightProperty);
 
-            set => this.SetValue(SelectedValueProperty, value);
+            set => this.SetValue(SelectedItemHeightProperty, value);
         }
 
         /// <summary>
-        ///     <para>Name of the property that will populate <see cref="SelectedValue" /></para>
-        ///     <para>For an IDictionary <see cref="ItemsSource" />, <see cref="DisplayMemberpath" /> defaults to "Key"</para>
+        ///     Template for the "selected" area. BindingContext is <see cref="SelectedItem" />. By default set to a
+        ///     <see cref="Label" /> bound to <see cref="SelectedMemberPath" />. Bindable property.
         /// </summary>
-        public string SelectedValuePath
+        public DataTemplate SelectedItemTemplate
         {
-            get => (string)this.GetValue(SelectedValuePathProperty);
+            get => (DataTemplate)this.GetValue(SelectedItemTemplateProperty);
 
-            set => this.SetValue(SelectedValuePathProperty, value);
+            set => this.SetValue(SelectedItemTemplateProperty, value);
+        }
+
+        /// <summary>
+        ///     Creates <see cref="SelectedItemTemplate" /> from the specified path
+        /// </summary>
+        public string SelectedMemberPath
+        {
+            get => (string)this.GetValue(SelectedMemberPathProperty);
+
+            set => this.SetValue(SelectedMemberPathProperty, value);
         }
 
         #endregion
 
         #region Methods
 
-        private static void BindablePropertyChanged(BindableObject bindable, ComboBoxProperty comboBoxProperty)
+        /// <summary>
+        ///     Determines if the dropdown can be displayed. Default value is <c>true</c>. Virtual.
+        /// </summary>
+        /// <returns></returns>
+        protected virtual bool CanShowDropDown()
         {
-            bindable.AsType<HliComboBox>().SyncSelecteItemWithSelectedIndex(comboBoxProperty);
+            return true;
         }
 
         /// <summary>
-        ///     Called when [items source property changed].
+        ///     Uses <see cref="SelectedItemTemplate" /> to populate <see cref="SelectedUserContentGrid" />
         /// </summary>
-        private static void OnItemsSourcePropertyChanged(BindableObject bindable, object oldValue, object o)
+        protected virtual void CreateSelectedItem()
         {
-            bindable.AsType<HliComboBox>().Rebind();
-        }
-
-        /// <summary>
-        ///     Add the provided KeyValuePair to <see cref="Picker.Items" /> and <see cref="sourceDictionary" />
-        /// </summary>
-        private void AddToItemsAndSelectionValues(object key, object value)
-        {
-            this.Items.Add(this.ValueIsDisplayMember() ? value.ToString() : key.ToString());
-            this.sourceDictionary.Add(this.ValueIsDisplayMember() ? key : value, new KeyValuePair<object, object>(key, value));
-        }
-
-        private void ItemsSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
-        {
-            var newItems = args.NewItems;
-            this.OnItemsSourceNewItems(newItems);
-
-            if (args.OldItems == null)
+            // Use placeholder when no SelectedItem
+            if (!string.IsNullOrWhiteSpace(this.Placeholder) && this.SelectedItem == null)
             {
+                this.CreatePlaceholder();
                 return;
             }
 
-            foreach (var oldItem in args.OldItems)
+            // Create template from ItemView
+            if (this.SelectedItemTemplate != default(DataTemplate) && this.SelectedItemTemplate != null)
             {
-                this.Items.Remove((oldItem ?? string.Empty).ToString());
-            }
-        }
-
-        private int ItemsSourceCount()
-        {
-            if (this.ItemsSource is IEnumerable<object>)
-            {
-                return ((IEnumerable<object>)this.ItemsSource).Count();
+                this.ItemView = this.SelectedItemTemplate.CreateContent() as View;
+                if (this.ItemView == null) throw new Exception($"{nameof(this.SelectedItemTemplate)} expected to be a View");
             }
 
-            if (this.ItemsSource is IDictionary)
-            {
-                return ((IDictionary)this.ItemsSource).Count;
-            }
+            this.ItemView.BindingContext = this.SelectedItem;
+            this.ItemView.HorizontalOptions = LayoutOptions.StartAndExpand;
+            this.ItemView.AddTapGestureRecognizer(this.OnSelectedItemTapped);
 
-            return 0;
+            this.SelectedUserContentGrid.Children.Clear();
+            this.SelectedUserContentGrid.Children.Add(this.ItemView);
         }
 
         /// <summary>
-        ///     The items source query or null.
+        ///     Occurs when an item is selected in the drop down. Closes the dropdown.
         /// </summary>
-        /// <returns>
-        ///     The <see cref="IQueryable" />.
-        /// </returns>
-        private IQueryable ItemsSourceQueryOrNull()
+        protected virtual void OnItemSelected(object sender, SelectedItemChangedEventArgs e)
         {
-            if (this.ItemsSource is IDictionary)
-            {
-                return ((IDictionary)this.ItemsSource).AsQueryable();
-            }
+            if (this.ItemsSource == null || this.SelectedItem == null) return;
 
-            return this.ItemsSource?.AsQueryable();
+            this.IsDropdownVisible = false;
+            this.CreateSelectedItem();
         }
 
         /// <summary>
-        ///     If <see cref="DisplayMemberpath" /> is set, extract value of property from <see cref="newItems" /> and populate
-        ///     <see cref="Picker.Items" />
+        ///     Occurs when <see cref="Placeholder" /> changes. Populates the main area with the placeholder text.
         /// </summary>
-        /// <param name="newItems">
-        ///     List of items with <see cref="DisplayMemberpath" /> property
-        /// </param>
-        private void OnItemsSourceNewItems(IEnumerable newItems)
+        protected virtual void OnPlaceholderChanged()
         {
-            if (newItems == null || string.IsNullOrWhiteSpace(this.DisplayMemberpath))
+            this.CreatePlaceholder();
+            this.CreateChildren();
+        }
+
+        /// <summary>
+        ///     Calls <see cref="ShowDropDown" />
+        /// </summary>
+        protected void OnSelectedItemTapped(object sender, EventArgs eventArgs)
+        {
+            if (this.IsDropdownVisible)
             {
-                return;
+                this.CloseCommand?.Execute(null);
+                this.HideDropDown();
             }
-
-            // Clear old values
-            this.sourceDictionary = new Dictionary<object, object>();
-            this.Items.Clear();
-
-            if (newItems is IDictionary)
+            else
             {
-                // If Dictionary, default Key/Quantity display/selected value member
-                if (string.IsNullOrWhiteSpace(this.DisplayMemberpath))
-                {
-                    this.DisplayMemberpath = "Quantity";
-                }
-
-                if (string.IsNullOrWhiteSpace(this.SelectedValuePath))
-                {
-                    this.SelectedValuePath = "Key";
-                }
-
-                this.PopulateItemsAndSelectionValuesFromDictionary();
-                return;
+                this.ShowDropDown();
             }
+        }
 
-            foreach (var newItem in newItems.Cast<object>().Where(newItem => newItem != null))
+        /// <summary>
+        ///     Hides the drop down
+        /// </summary>
+        protected void OnUnfocused(object sender, FocusEventArgs e)
+        {
+            this.IsDropdownVisible = false;
+        }
+
+        /// <summary>
+        ///     Displays the <see cref="DropDownGrid" /> as a modal page
+        /// </summary>
+        protected virtual async void ShowOrHidePopup()
+        {
+            try
             {
-                // Display value to Items
-                var displayValue = newItem.GetValueForProperty(this.DisplayMemberpath);
-                this.Items.Add(displayValue.ToString());
-
-                // Selection Quantity + item object to sourceDictionary
-                if (string.IsNullOrWhiteSpace(this.SelectedValuePath) == false)
+                // The dropdown has been set to True - show dropdown as modal
+                if (this.IsDropdownVisible)
                 {
-                    var valueForProperty = newItem.GetValueForProperty(this.SelectedValuePath);
-                    if (this.sourceDictionary.ContainsKey(valueForProperty) == false)
-                    {
-                        this.sourceDictionary.Add(valueForProperty, newItem);
-                    }
+                    // Populate the page that's shown as "drop down"
+                    this.dropDownPage = new ContentPage { Content = new StackLayout { Children = { this.DropDownGrid, this.CloseButton } } };
+
+                    if (this.Navigation.ModalStack.Contains(this.dropDownPage) == false) await this.Navigation.PushModalAsync(this.dropDownPage);
+                }
+                else if (this.Navigation.ModalStack.Contains(this.dropDownPage))
+                {
+                    await this.Navigation.PopModalAsync();
+                    this.CloseCommand?.Execute(null);
+                    this.HideDropDown();
                 }
             }
-        }
-
-        /// <summary>
-        ///     The on selected index changed.
-        /// </summary>
-        /// <param name="sender">
-        ///     The sender.
-        /// </param>
-        /// <param name="eventArgs">
-        ///     The event args.
-        /// </param>
-        private void OnSelectedIndexChanged(object sender, EventArgs eventArgs)
-        {
-            this.SyncSelecteItemWithSelectedIndex(ComboBoxProperty.SelectedIndex);
-        }
-
-        /// <summary>
-        ///     Parse type of ItemsSource as Dictionary and populate <see cref="Picker.Items" /> and
-        ///     <see cref="sourceDictionary" />.
-        /// </summary>
-        private void PopulateItemsAndSelectionValuesFromDictionary()
-        {
-            var dict = this.ItemsSource as IDictionary;
-            if (dict != null)
+            catch (Exception ex)
             {
-                foreach (var keyvalue in dict.Keys)
-                {
-                    this.AddToItemsAndSelectionValues(keyvalue, dict[keyvalue]);
-                }
+                AppService.WriteDebug(ex);
             }
         }
 
-        /// <summary>
-        ///     Listen to changes in <see cref="ItemsSource" /> and call <see cref="OnItemsSourceNewItems" />
-        /// </summary>
-        private void Rebind()
+        private static void OnCloseButtonTextChanged(BindableObject bindable, object oldValue, object newValue)
         {
-            // Check if ItemsSource supports notification
-            var notifyCollection = this.ItemsSource as INotifyCollectionChanged;
-            if (notifyCollection != null)
-            {
-                notifyCollection.CollectionChanged -= this.ItemsSourceCollectionChanged;
-                notifyCollection.CollectionChanged += this.ItemsSourceCollectionChanged;
-            }
+            if (oldValue == newValue || string.IsNullOrWhiteSpace(newValue?.ToString())) return;
 
-            this.OnItemsSourceNewItems(this.ItemsSource);
+            bindable.AsType<HliComboBox>().CloseButton.Text = newValue.ToString();
+        }
+
+        private static void OnDisplayMemberPathChanged(BindableObject bindable, object oldValue, object newValue)
+        {
+            if (oldValue == newValue || string.IsNullOrWhiteSpace(newValue?.ToString())) return;
+
+            bindable.AsType<HliComboBox>().CreateChildren();
+        }
+
+        private static void OnHasContentBorderChanged(BindableObject bindable, object oldValue, object newValue)
+        {
+            if (oldValue == newValue || newValue == null || newValue is bool == false) return;
+
+            var hasBorder = (bool)newValue;
+            var comboBox = bindable.AsType<HliComboBox>();
+
+            comboBox.selectedBorderGrid.Padding = hasBorder ? 2 : 0;
+            comboBox.selectedBorderGrid.BackgroundColor = hasBorder ? Color.Gray : Color.Transparent;
+        }
+
+        private static void OnHasDropDownArrowChanged(BindableObject bindable, object oldValue, object newValue)
+        {
+            if (oldValue == newValue || newValue == null || newValue is bool == false) return;
+
+            bindable.AsType<HliComboBox>().CreateChildren();
+        }
+
+        private static void OnIsDropdownVisibleChanged(BindableObject bindable, object oldValue, object newValue)
+        {
+            if (oldValue == newValue || newValue is bool == false) return;
+
+            bindable.AsType<HliComboBox>().ShowOrHidePopup();
+        }
+
+        private static void OnItemsSourceChanged(BindableObject bindable, object oldValue, object newValue)
+        {
+            if (oldValue == newValue || newValue == null || newValue is IEnumerable == false) return;
+
+            bindable.AsType<HliComboBox>().CreateChildren();
+        }
+
+        private static void OnItemTemplateChanged(BindableObject bindable, object oldValue, object newValue)
+        {
+            if (oldValue == newValue || newValue == null || newValue is DataTemplate == false) return;
+
+            var comboBox = bindable.AsType<HliComboBox>();
+            comboBox.ItemTemplate = (DataTemplate)newValue;
+            comboBox.CreateChildren();
+        }
+
+        private static void OnPlaceholderChanged(BindableObject bindable, object oldValue, object newValue)
+        {
+            var view = bindable.AsType<HliComboBox>();
+            if (oldValue == newValue || newValue == null || newValue is string == false || view.SelectedItem != null) return;
+
+            view.OnPlaceholderChanged();
+        }
+
+        private static void OnRowHeightChanged(BindableObject bindable, object oldValue, object newValue)
+        {
+            if (oldValue == newValue || newValue == null || newValue is double == false) return;
+
+            bindable.AsType<HliComboBox>().CreateChildren();
         }
 
         /// <summary>
-        ///     The selected item as key value pair.
+        ///     Sets <see cref="IsDropdownVisible" /> to <c>True</c>
         /// </summary>
-        /// <returns>
-        ///     The <see cref="KeyValuePair{TKey,TValue}" />.
-        /// </returns>
-        private KeyValuePair<object, object> SelectedItemAsKeyValuePair()
+        private static void OnSelectedItemChanged(BindableObject bindable, object oldValue, object newValue)
         {
-            if (this.sourceDictionary != null && this.SelectedItem != null)
-            {
-                // Safe match
-                return this.sourceDictionary.FirstOrDefault(pair => pair.Value.ToString() == this.SelectedItem.ToString());
-            }
+            if (oldValue == newValue || newValue == null) return;
 
-            return new KeyValuePair<object, object>();
+            // Close drop down on selection
+            bindable.AsType<HliComboBox>().IsDropdownVisible = false;
+        }
+
+        private static void OnSelectedItemTemplateChanged(BindableObject bindable, object oldValue, object newValue)
+        {
+            if (oldValue == newValue || newValue == null) return;
+
+            bindable.AsType<HliComboBox>().CreateSelectedItem();
+        }
+
+        private static void OnSelectedMemberPathChanged(BindableObject bindable, object oldValue, object newValue)
+        {
+            if (oldValue == newValue || newValue == null || newValue is string == false) return;
+
+            var hliComboBox = bindable.AsType<HliComboBox>();
+            hliComboBox.CreateSelectedItemTemplateFromDisplayMemberPath();
+            hliComboBox.CreateChildren();
         }
 
         /// <summary>
-        ///     Sets <see cref="Picker.SelectedIndex" /> from <see cref="SelectedItem" />
+        ///     Populates this children of this control
         /// </summary>
-        private void SetSelectedIndex()
+        private void CreateChildren()
         {
-            // SelectedIndex from SelectedItem
-            var keyValuePair = this.SelectedItemAsKeyValuePair();
-            if (keyValuePair.Key != null)
+            if (this.ItemsSource == null) return;
+
+            this.Children.Clear();
+
+            // User content Grid
+            this.CreateSelectedItem();
+
+            // Add outer most grid as child
+            this.Children.Add(this.selectedBorderGrid);
+
+            //// Drop Down Grid
+
+            // Convert to objects
+            var objects = this.ItemsSource.Cast<object>().ToList();
+
+            // Reset ListView
+            this.DropDownListView.ItemTemplate = null;
+            this.DropDownListView.ItemsSource = null;
+
+            // Re-bind
+            this.DropDownListView.ItemsSource = objects;
+
+            // A display member path of the model is supplied
+            if (!string.IsNullOrWhiteSpace(this.DisplayMemberPath))
             {
-                var key = keyValuePair.Key; ////this.ValueIsDisplayMember() ? keyValuePair.Key : keyValuePair.Value;
-                this.SelectedIndex = this.sourceDictionary.Keys.IndexOf(key);
+                this.DropDownListView.ItemTemplate = new DataTemplate(() => new ViewCell { View = this.CreateDisplayLabelFromSelectedMemberPath() });
             }
-            else if (this.SelectedItem != null && this.ItemsSource != null)
+            else
             {
-                if (this.ItemsSource is IEnumerable<object>)
-                {
-                    this.SelectedIndex = ((IEnumerable<object>)this.ItemsSource).ToArray().IndexOf(this.SelectedItem);
-                }
-                else if (this.ItemsSource.IndexOf(this.SelectedItem) != -1)
-                {
-                    this.SelectedIndex = this.ItemsSource.IndexOf(this.SelectedItem);
-                }
+                // A custom item template is supplied
+                this.DropDownListView.ItemTemplate = this.ItemTemplate;
             }
+
+            // List properties
+            this.DropDownListView.MinimumHeightRequest = this.RowHeight;
+
+            // The grid that's shown as popup on DisplayPopup
+            this.DropDownGrid.Children.Add(this.DropDownListView);
         }
 
         /// <summary>
-        ///     Sets <see cref="SelectedItem" /> from <see cref="Picker.SelectedIndex" /> or <see cref="SelectedValue" />
+        ///     Creates a label that binds its text to <see cref="DisplayMemberPath" />
         /// </summary>
-        private void SetSelectedItem()
+        /// <returns>The <see cref="Label"/> or <c>null</c> if binding was not possible</returns>
+        private Label CreateDisplayLabelFromSelectedMemberPath()
         {
-            // SelectedItem from SelectedIndex
-            if (this.ItemsSourceQueryOrNull() != null && this.SelectedIndex != -1 && this.SelectedIndex < this.ItemsSourceCount())
-            {
-                if (this.ItemsSource is IEnumerable<object>)
-                {
-                    this.SelectedItem = ((IEnumerable<object>)this.ItemsSource).ToArray()[this.SelectedIndex];
-                }
-                else if (this.ItemsSource is IDictionary)
-                {
-                    this.SelectedItem = this.sourceDictionary.ElementAt(this.SelectedIndex).Value;
-                }
-            }
+            if (string.IsNullOrWhiteSpace(this.DisplayMemberPath)) return null;
 
-            // SelectedItem from SelectedValue
-            if (this.SelectedValue != null && this.sourceDictionary != null && this.sourceDictionary.ContainsKey(this.SelectedValue))
-            {
-                this.SelectedItem = this.sourceDictionary[this.SelectedValue];
-            }
+            var displayLabel = new Label { Margin = 4 };
+            displayLabel.SetBinding(Label.TextProperty, this.DisplayMemberPath);
+            return displayLabel;
+        }
+
+        private void CreatePlaceholder()
+        {
+            // Default content label displays the value of selected item as default
+            var contentLabel = new Label { Text = this.Placeholder, Margin = new Thickness(3), TextColor = Color.Gray };
+            contentLabel.AddTapGestureRecognizer(this.OnSelectedItemTapped);
+            this.SelectedUserContentGrid.Children.Clear();
+            this.SelectedUserContentGrid.Children.Add(contentLabel);
+        }
+
+        private void CreateSelectedItemTemplateFromDisplayMemberPath()
+        {
+            if (this.ItemView != null) return;
+
+            var label = this.CreateDisplayLabelFromSelectedMemberPath();
+            if (label == null) return;
+
+            // Bind the label to selected item model
+            label.SetBinding(BindingContextProperty, nameof(this.SelectedItem));
+            this.ItemTemplate = new DataTemplate(() => new ViewCell { View = label });
         }
 
         /// <summary>
-        ///     Syncs <see cref="Picker.SelectedIndex" />, <see cref="SelectedItem" /> and <see cref="SelectedValue" />.
+        ///     Hides the dropdown / popup
         /// </summary>
-        /// <param name="propertyChanged">
-        ///     The property Changed.
-        /// </param>
-        private void SyncSelecteItemWithSelectedIndex(ComboBoxProperty propertyChanged)
+        private void HideDropDown()
         {
-            if (propertyChanged != ComboBoxProperty.SelectedIndex)
-            {
-                this.SetSelectedIndex();
-            }
-
-            if (propertyChanged != ComboBoxProperty.SelectedItem)
-            {
-                this.SetSelectedItem();
-            }
-
-            if (propertyChanged != ComboBoxProperty.SelectedValue)
-            {
-                // SelectedValue from SelectedItem
-                if (this.SelectedItem != null && this.SelectedValuePath != null)
-                {
-                    this.SelectedValue = this.SelectedItem.GetValueForProperty(this.SelectedValuePath);
-                }
-
-                this.SetSelectedIndex();
-            }
+            this.IsDropdownVisible = false;
         }
 
         /// <summary>
-        ///     Determines if "value" is <see cref="DisplayMemberpath" />
+        ///     Opens the dropdown assuming <see cref="CanShowDropDown" /> returns <c>true</c>
         /// </summary>
-        /// <returns>
-        ///     <c>True</c> if DisplayMemberpath is "value"
-        /// </returns>
-        private bool ValueIsDisplayMember()
+        private void ShowDropDown()
         {
-            return this.DisplayMemberpath?.ToLower() == "value";
+            this.IsDropdownVisible = this.CanShowDropDown();
         }
 
         #endregion

@@ -4,67 +4,147 @@
     x:Class="XFTest.NetStandard.MainPage"
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:behaviors="clr-namespace:HLI.Forms.Core.Behaviors;assembly=HLI.Forms.Core"
     xmlns:hli="clr-namespace:HLI.Forms.Core.Controls;assembly=HLI.Forms.Core"
     xmlns:local="clr-namespace:XFTest.NetStandard">
-
-    <ContentPage Title="HLi Bar Chart">
+    <ContentPage Title="HliRefreshableView">
         <ContentPage.BindingContext>
             <local:MainViewModel />
         </ContentPage.BindingContext>
+
         <StackLayout>
+            <Label FontAttributes="Bold" Text="BusyReason" />
+            <Entry behaviors:ViewBehaviors.IsAnimated="True" Text="{Binding BusyReason, Mode=TwoWay}" />
+
+            <Label FontAttributes="Bold" Text="IsBusy" />
+            <Switch behaviors:ViewBehaviors.IsAnimated="True" IsToggled="{Binding IsBusy, Mode=TwoWay}" />
+
+            <Label FontAttributes="Bold" Text="HliRefreshableView" />
+            <hli:HliRefreshableView IsBusyMemberPath="IsBusy">
+                <StackLayout>
+                    <Label FontAttributes="Bold" Text="Latest news" />
+                    <ScrollView Orientation="Vertical">
+                        <WebView
+                            HeightRequest="800"
+                            Source="http://xamariniac.hlinteractive.se/"
+                            WidthRequest="500" />
+                    </ScrollView>
+                </StackLayout>
+            </hli:HliRefreshableView>
+        </StackLayout>
+    </ContentPage>
+    <ContentPage Title="HLiBarChart">
+        <ContentPage.BindingContext>
+            <local:MainViewModel />
+        </ContentPage.BindingContext>
+
+        <StackLayout>
+            <Label FontAttributes="Bold" Text="HliBarChart" />
             <Label Text="Moons / Planet" />
             <hli:HliBarChart
-                BarScale="3"
+                BarScale="5"
                 ItemsSource="{Binding Models}"
                 LabelPath="Name"
                 ValuePath="Moons" />
         </StackLayout>
     </ContentPage>
-    <ContentPage Title="HLi ComboBox">
+    <ContentPage Title="HLiBindablePicker">
         <ContentPage.BindingContext>
             <local:MainViewModel />
         </ContentPage.BindingContext>
 
         <StackLayout>
-            <Label FontAttributes="Bold" Text="Select planet" />
-            <hli:HliComboBox
+            <Label FontAttributes="Bold" Text="SelectedItem" />
+            <hli:HliBindablePicker
                 DisplayMemberpath="Name"
                 ItemsSource="{Binding Models}"
                 SelectedItem="{Binding SelectedItem, Mode=TwoWay}" />
-            <Label FontAttributes="Bold" Text="Moons" />
+            <Label FontAttributes="Bold" Text="SelectedItem.Image" />
+            <Image
+                HeightRequest="200"
+                Source="{Binding SelectedItem.Image}"
+                WidthRequest="200" />
+            <Label FontAttributes="Bold" Text="SelectedItem.Moons" />
             <Label Text="{Binding SelectedItem.Moons}" />
+            <Label FontAttributes="Bold" Text="SelectedItem.Fauna" />
+            <Label Text="{Binding SelectedItem.Fauna}" />
+        </StackLayout>
+    </ContentPage>
+    <ContentPage Title="HLiComboBox">
+        <ContentPage.BindingContext>
+            <local:MainViewModel />
+        </ContentPage.BindingContext>
+
+        <StackLayout>
+            <Label FontAttributes="Bold" Text="SelectedItem" />
+            <hli:HliComboBox
+                DisplayMemberPath="Name"
+                ItemsSource="{Binding Models}"
+                Placeholder="Pick a planet!"
+                RowHeight="50"
+                SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
+                <hli:HliComboBox.ItemView>
+                    <StackLayout
+                        x:Key="PlanetTemplate"
+                        Margin="0,5,0,0"
+                        Orientation="Horizontal">
+                        <Image
+                            HeightRequest="20"
+                            Source="{Binding Thumbnail}"
+                            WidthRequest="20" />
+                        <Label Margin="5,0,0,0" Text="{Binding Name}" />
+                    </StackLayout>
+                </hli:HliComboBox.ItemView>
+            </hli:HliComboBox>
+            <Label FontAttributes="Bold" Text="SelectedItem.Image" />
+            <Image
+                HeightRequest="200"
+                Source="{Binding SelectedItem.Image}"
+                WidthRequest="200" />
+            <Label FontAttributes="Bold" Text="SelectedItem.Class" />
+            <Label Text="{Binding SelectedItem.Class}" />
+            <Label FontAttributes="Bold" Text="SelectedItem.Name" />
+            <Label Text="{Binding SelectedItem.Name}" />
         </StackLayout>
     </ContentPage>
 
-    <ContentPage Title="HLi ModalView">
+    <ContentPage Title="HLiModalView">
         <hli:HliPlaceholderView>
+            <hli:HliPlaceholderView.CloseView>
+                <StackLayout Orientation="Horizontal">
+                    <Button
+                        BackgroundColor="Maroon"
+                        Text="Cancel"
+                        TextColor="White" />
+                    <Button
+                        BackgroundColor="Green"
+                        Text="Send"
+                        TextColor="White" />
+                </StackLayout>
+            </hli:HliPlaceholderView.CloseView>
+
             <hli:HliPlaceholderView.UnfocusedView>
-
-                <Label Text="Read more!" />
-
+                <StackLayout>
+                    <Label Text="Write post" />
+                    <Entry Text="Odio velit duis! Habitasse mauris scelerisque vel quis, in in? Tristique nisi auctor pulvinar non pellentesque quis nec!" />
+                </StackLayout>
             </hli:HliPlaceholderView.UnfocusedView>
 
-            <hli:HliPlaceholderView.FocusedPage>
-                <ContentPage Padding="20" BackgroundColor="White">
-                    <Grid
-                        Padding="20"
-                        BackgroundColor="Gray"
-                        HorizontalOptions="Fill"
-                        VerticalOptions="Fill">
-
-                        <ScrollView HorizontalOptions="Fill" VerticalOptions="Fill">
-                            <Label
-                                Margin="10,0,0,0"
-                                HorizontalOptions="Fill"
-                                LineBreakMode="WordWrap"
-                                Text="Odio velit duis! Habitasse mauris scelerisque vel quis, in in? Tristique nisi auctor pulvinar non pellentesque quis nec! Adipiscing urna egestas massa et, enim! Nisi et, pulvinar tristique integer nascetur! Ac cum. Aliquet, dictumst scelerisque. Eu! Ultrices rhoncus ut nec etiam vut, diam placerat sed? Integer ultrices amet sed scelerisque et. Duis adipiscing tincidunt tincidunt turpis, quis diam, placerat quis! In magnis ac in, sed aliquam, sit eu mus habitasse dictumst mattis! Ac nec turpis scelerisque! Velit et. Mid et! Lectus mattis duis porta! Augue risus et augue, diam amet. Ut pellentesque, porta, odio! Adipiscing mauris, sagittis a a augue porttitor, enim pulvinar dapibus? Aenean amet tincidunt et habitasse montes aenean. Scelerisque! Etiam natoque cras duis amet proin lectus in."
-                                TextColor="White"
-                                VerticalOptions="Fill" />
-                        </ScrollView>
-
-                    </Grid>
-                </ContentPage>
-            </hli:HliPlaceholderView.FocusedPage>
+            <hli:HliPlaceholderView.FocusedView>
+                <Grid
+                    Padding="20"
+                    HorizontalOptions="Fill"
+                    VerticalOptions="Fill">
+                    <ScrollView HorizontalOptions="Fill" VerticalOptions="Fill">
+                        <Editor
+                            Margin="10,0,0,0"
+                            HeightRequest="500"
+                            HorizontalOptions="Fill"
+                            Text="Odio velit duis! Habitasse mauris scelerisque vel quis, in in? Tristique nisi auctor pulvinar non pellentesque quis nec! Adipiscing urna egestas massa et, enim! Nisi et, pulvinar tristique integer nascetur! Ac cum. Aliquet, dictumst scelerisque. Eu! Ultrices rhoncus ut nec etiam vut, diam placerat sed? Integer ultrices amet sed scelerisque et. Duis adipiscing tincidunt tincidunt turpis, quis diam, placerat quis! In magnis ac in, sed aliquam, sit eu mus habitasse dictumst mattis! Ac nec turpis scelerisque! Velit et. Mid et! Lectus mattis duis porta! Augue risus et augue, diam amet. Ut pellentesque, porta, odio! Adipiscing mauris, sagittis a a augue porttitor, enim pulvinar dapibus? Aenean amet tincidunt et habitasse montes aenean. Scelerisque! Etiam natoque cras duis amet proin lectus in."
+                            VerticalOptions="Fill" />
+                    </ScrollView>
+                </Grid>
+            </hli:HliPlaceholderView.FocusedView>
         </hli:HliPlaceholderView>
 
     </ContentPage>
