@@ -80,25 +80,21 @@
             <hli:HliComboBox
                 DisplayMemberPath="Name"
                 ItemsSource="{Binding Models}"
+                Placeholder="Pick a planet!"
                 RowHeight="50"
-                SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
-                SelectedMemberPath="Name">
-                <hli:HliComboBox.ItemTemplate>
-                    <DataTemplate>
-                        <ViewCell>
-                            <!--<ViewCell.BindingContext>
-                                <local:Planet></local:Planet>
-                            </ViewCell.BindingContext>-->
-                            <StackLayout Margin="0,5,0,0" Orientation="Horizontal">
-                                <Image
-                                    HeightRequest="20"
-                                    Source="{Binding Thumbnail}"
-                                    WidthRequest="20" />
-                                <Label Margin="5,0,0,0" Text="{Binding Name}" />
-                            </StackLayout>
-                        </ViewCell>
-                    </DataTemplate>
-                </hli:HliComboBox.ItemTemplate>
+                SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
+                <hli:HliComboBox.ItemView>
+                    <StackLayout
+                        x:Key="PlanetTemplate"
+                        Margin="0,5,0,0"
+                        Orientation="Horizontal">
+                        <Image
+                            HeightRequest="20"
+                            Source="{Binding Thumbnail}"
+                            WidthRequest="20" />
+                        <Label Margin="5,0,0,0" Text="{Binding Name}" />
+                    </StackLayout>
+                </hli:HliComboBox.ItemView>
             </hli:HliComboBox>
             <Label FontAttributes="Bold" Text="SelectedItem.Image" />
             <Image

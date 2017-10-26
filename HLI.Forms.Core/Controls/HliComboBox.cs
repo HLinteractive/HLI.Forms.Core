@@ -10,6 +10,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 
+using HLI.Core.Extensions;
 using HLI.Forms.Core.Extensions;
 using HLI.Forms.Core.Services;
 
@@ -222,6 +223,8 @@ namespace HLI.Forms.Core.Controls
         /// </summary>
         private ContentPage dropDownPage;
 
+        private View itemView;
+
         #endregion
 
         #region Constructors and Destructors
@@ -359,6 +362,30 @@ namespace HLI.Forms.Core.Controls
         }
 
         /// <summary>
+        ///     Gets or sets the <see cref="View" /> that will be displayed as <see cref="ItemTemplate" /> and
+        ///     <see cref="SelectedItemTemplate" />
+        /// </summary>
+        public View ItemView
+        {
+            get => this.itemView;
+
+            set
+            {
+                if (this.itemView == value || value == null)
+                {
+                    return;
+                }
+
+                this.itemView = value;
+                var template = value.DeepClone() as View;
+                if (template != null)
+                {
+                    this.ItemTemplate = new DataTemplate(() => new ViewCell { View = template });
+                }
+            }
+        }
+
+        /// <summary>
         ///     Placeholder when there is no <see cref="SelectedItem" />. Default value is "Select"
         /// </summary>
         public string Placeholder
@@ -454,30 +481,22 @@ namespace HLI.Forms.Core.Controls
                 return;
             }
 
-            // Use template and SelectedItem
-            if (this.SelectedItemTemplate == default(DataTemplate) || this.SelectedItemTemplate == null)
+            // Create template from ItemView
+            if (this.SelectedItemTemplate != default(DataTemplate) && this.SelectedItemTemplate != null)
             {
-                return;
+                this.ItemView = this.SelectedItemTemplate.CreateContent() as View;
+                if (this.ItemView == null)
+                {
+                    throw new Exception($"{nameof(this.SelectedItemTemplate)} expected to be a View");
+                }
             }
 
-            var view = this.SelectedItemTemplate.CreateContent() as View;
-            if (view == null)
-            {
-                throw new Exception($"{nameof(this.SelectedItemTemplate)} expected to be a View");
-            }
-
-            ////var view = cell.Parent as View;
-            ////if (view == null)
-            ////{
-            ////    return;
-            ////}
-
-            view.BindingContext = this.SelectedItem;
-            view.HorizontalOptions = LayoutOptions.StartAndExpand;
-            view.AddTapGestureRecognizer(this.OnSelectedItemTapped);
+            this.ItemView.BindingContext = this.SelectedItem;
+            this.ItemView.HorizontalOptions = LayoutOptions.StartAndExpand;
+            this.ItemView.AddTapGestureRecognizer(this.OnSelectedItemTapped);
 
             this.SelectedUserContentGrid.Children.Clear();
-            this.SelectedUserContentGrid.Children.Add(view);
+            this.SelectedUserContentGrid.Children.Add(this.ItemView);
         }
 
         /// <summary>
@@ -733,9 +752,14 @@ namespace HLI.Forms.Core.Controls
 
         private void CreateItemTemplateFromDisplayMemberPath()
         {
+            if (this.ItemView != null)
+            {
+                return;
+            }
+
             var label = new Label();
             label.SetBinding(Label.TextProperty, this.DisplayMemberPath);
-            this.ItemTemplate = new DataTemplate(() => label);
+            this.ItemTemplate = new DataTemplate(() => new ViewCell { View = label });
         }
 
         private void CreatePlaceholder()
