@@ -243,7 +243,7 @@ namespace HLI.Forms.Core.Controls
             this.RowSpacing = 0;
 
             // Bind selected item
-            this.DropDownListView.SetBinding<HliComboBox>(ListView.SelectedItemProperty, ac => ac.SelectedItem, BindingMode.TwoWay);
+            this.DropDownListView.SetBinding(ListView.SelectedItemProperty, new Binding("SelectedItem", BindingMode.TwoWay));
 
             this.DropDownListView.ItemSelected -= this.OnItemSelected;
             this.DropDownListView.ItemSelected += this.OnItemSelected;
@@ -264,7 +264,7 @@ namespace HLI.Forms.Core.Controls
             this.selectedColumnsGrid.Children.Add(this.SelectedUserContentGrid);
 
             // Column 1: Drop down arrow
-            this.dropDownArrowLabel.SetBinding<HliComboBox>(IsVisibleProperty, combobox => combobox.HasDropDownArrow);
+            this.dropDownArrowLabel.SetBinding(IsVisibleProperty, nameof(this.HasDropDownArrow));
             this.dropDownArrowLabel.BindingContext = this;
             this.selectedColumnsGrid.Children.Add(this.dropDownArrowLabel);
             this.dropDownArrowLabel.AddTapGestureRecognizer(this.OnSelectedItemTapped);
@@ -371,17 +371,11 @@ namespace HLI.Forms.Core.Controls
 
             set
             {
-                if (this.itemView == value || value == null)
-                {
-                    return;
-                }
+                if (this.itemView == value || value == null) return;
 
                 this.itemView = value;
                 var template = value.DeepClone() as View;
-                if (template != null)
-                {
-                    this.ItemTemplate = new DataTemplate(() => new ViewCell { View = template });
-                }
+                if (template != null) this.ItemTemplate = new DataTemplate(() => new ViewCell { View = template });
             }
         }
 
@@ -485,10 +479,7 @@ namespace HLI.Forms.Core.Controls
             if (this.SelectedItemTemplate != default(DataTemplate) && this.SelectedItemTemplate != null)
             {
                 this.ItemView = this.SelectedItemTemplate.CreateContent() as View;
-                if (this.ItemView == null)
-                {
-                    throw new Exception($"{nameof(this.SelectedItemTemplate)} expected to be a View");
-                }
+                if (this.ItemView == null) throw new Exception($"{nameof(this.SelectedItemTemplate)} expected to be a View");
             }
 
             this.ItemView.BindingContext = this.SelectedItem;
@@ -504,10 +495,7 @@ namespace HLI.Forms.Core.Controls
         /// </summary>
         protected virtual void OnItemSelected(object sender, SelectedItemChangedEventArgs e)
         {
-            if (this.ItemsSource == null || this.SelectedItem == null)
-            {
-                return;
-            }
+            if (this.ItemsSource == null || this.SelectedItem == null) return;
 
             this.IsDropdownVisible = false;
             this.CreateSelectedItem();
@@ -559,10 +547,7 @@ namespace HLI.Forms.Core.Controls
                     // Populate the page that's shown as "drop down"
                     this.dropDownPage = new ContentPage { Content = new StackLayout { Children = { this.DropDownGrid, this.CloseButton } } };
 
-                    if (this.Navigation.ModalStack.Contains(this.dropDownPage) == false)
-                    {
-                        await this.Navigation.PushModalAsync(this.dropDownPage);
-                    }
+                    if (this.Navigation.ModalStack.Contains(this.dropDownPage) == false) await this.Navigation.PushModalAsync(this.dropDownPage);
                 }
                 else if (this.Navigation.ModalStack.Contains(this.dropDownPage))
                 {
@@ -579,30 +564,21 @@ namespace HLI.Forms.Core.Controls
 
         private static void OnCloseButtonTextChanged(BindableObject bindable, object oldValue, object newValue)
         {
-            if (oldValue == newValue || string.IsNullOrWhiteSpace(newValue?.ToString()))
-            {
-                return;
-            }
+            if (oldValue == newValue || string.IsNullOrWhiteSpace(newValue?.ToString())) return;
 
             bindable.AsType<HliComboBox>().CloseButton.Text = newValue.ToString();
         }
 
         private static void OnDisplayMemberPathChanged(BindableObject bindable, object oldValue, object newValue)
         {
-            if (oldValue == newValue || string.IsNullOrWhiteSpace(newValue?.ToString()))
-            {
-                return;
-            }
+            if (oldValue == newValue || string.IsNullOrWhiteSpace(newValue?.ToString())) return;
 
-            bindable.AsType<HliComboBox>().CreateItemTemplateFromDisplayMemberPath();
+            bindable.AsType<HliComboBox>().CreateChildren();
         }
 
         private static void OnHasContentBorderChanged(BindableObject bindable, object oldValue, object newValue)
         {
-            if (oldValue == newValue || newValue == null || newValue is bool == false)
-            {
-                return;
-            }
+            if (oldValue == newValue || newValue == null || newValue is bool == false) return;
 
             var hasBorder = (bool)newValue;
             var comboBox = bindable.AsType<HliComboBox>();
@@ -613,40 +589,28 @@ namespace HLI.Forms.Core.Controls
 
         private static void OnHasDropDownArrowChanged(BindableObject bindable, object oldValue, object newValue)
         {
-            if (oldValue == newValue || newValue == null || newValue is bool == false)
-            {
-                return;
-            }
+            if (oldValue == newValue || newValue == null || newValue is bool == false) return;
 
             bindable.AsType<HliComboBox>().CreateChildren();
         }
 
         private static void OnIsDropdownVisibleChanged(BindableObject bindable, object oldValue, object newValue)
         {
-            if (oldValue == newValue || newValue is bool == false)
-            {
-                return;
-            }
+            if (oldValue == newValue || newValue is bool == false) return;
 
             bindable.AsType<HliComboBox>().ShowOrHidePopup();
         }
 
         private static void OnItemsSourceChanged(BindableObject bindable, object oldValue, object newValue)
         {
-            if (oldValue == newValue || newValue == null || newValue is IEnumerable == false)
-            {
-                return;
-            }
+            if (oldValue == newValue || newValue == null || newValue is IEnumerable == false) return;
 
             bindable.AsType<HliComboBox>().CreateChildren();
         }
 
         private static void OnItemTemplateChanged(BindableObject bindable, object oldValue, object newValue)
         {
-            if (oldValue == newValue || newValue == null || newValue is DataTemplate == false)
-            {
-                return;
-            }
+            if (oldValue == newValue || newValue == null || newValue is DataTemplate == false) return;
 
             var comboBox = bindable.AsType<HliComboBox>();
             comboBox.ItemTemplate = (DataTemplate)newValue;
@@ -656,20 +620,14 @@ namespace HLI.Forms.Core.Controls
         private static void OnPlaceholderChanged(BindableObject bindable, object oldValue, object newValue)
         {
             var view = bindable.AsType<HliComboBox>();
-            if (oldValue == newValue || newValue == null || newValue is string == false || view.SelectedItem != null)
-            {
-                return;
-            }
+            if (oldValue == newValue || newValue == null || newValue is string == false || view.SelectedItem != null) return;
 
             view.OnPlaceholderChanged();
         }
 
         private static void OnRowHeightChanged(BindableObject bindable, object oldValue, object newValue)
         {
-            if (oldValue == newValue || newValue == null || newValue is double == false)
-            {
-                return;
-            }
+            if (oldValue == newValue || newValue == null || newValue is double == false) return;
 
             bindable.AsType<HliComboBox>().CreateChildren();
         }
@@ -679,10 +637,7 @@ namespace HLI.Forms.Core.Controls
         /// </summary>
         private static void OnSelectedItemChanged(BindableObject bindable, object oldValue, object newValue)
         {
-            if (oldValue == newValue || newValue == null)
-            {
-                return;
-            }
+            if (oldValue == newValue || newValue == null) return;
 
             // Close drop down on selection
             bindable.AsType<HliComboBox>().IsDropdownVisible = false;
@@ -690,22 +645,18 @@ namespace HLI.Forms.Core.Controls
 
         private static void OnSelectedItemTemplateChanged(BindableObject bindable, object oldValue, object newValue)
         {
-            if (oldValue == newValue || newValue == null)
-            {
-                return;
-            }
+            if (oldValue == newValue || newValue == null) return;
 
             bindable.AsType<HliComboBox>().CreateSelectedItem();
         }
 
         private static void OnSelectedMemberPathChanged(BindableObject bindable, object oldValue, object newValue)
         {
-            if (oldValue == newValue || newValue == null || newValue is string == false)
-            {
-                return;
-            }
+            if (oldValue == newValue || newValue == null || newValue is string == false) return;
 
-            bindable.AsType<HliComboBox>().CreateDisplayTemplateFromMemberPath();
+            var hliComboBox = bindable.AsType<HliComboBox>();
+            hliComboBox.CreateSelectedItemTemplateFromDisplayMemberPath();
+            hliComboBox.CreateChildren();
         }
 
         /// <summary>
@@ -713,12 +664,9 @@ namespace HLI.Forms.Core.Controls
         /// </summary>
         private void CreateChildren()
         {
-            this.Children.Clear();
+            if (this.ItemsSource == null) return;
 
-            if (this.ItemsSource == null || this.ItemTemplate == default(DataTemplate))
-            {
-                return;
-            }
+            this.Children.Clear();
 
             // User content Grid
             this.CreateSelectedItem();
@@ -731,9 +679,23 @@ namespace HLI.Forms.Core.Controls
             // Convert to objects
             var objects = this.ItemsSource.Cast<object>().ToList();
 
-            // Populate ListView
-            this.DropDownListView.ItemTemplate = this.ItemTemplate;
+            // Reset ListView
+            this.DropDownListView.ItemTemplate = null;
+            this.DropDownListView.ItemsSource = null;
+
+            // Re-bind
             this.DropDownListView.ItemsSource = objects;
+
+            // A display member path of the model is supplied
+            if (!string.IsNullOrWhiteSpace(this.DisplayMemberPath))
+            {
+                this.DropDownListView.ItemTemplate = new DataTemplate(() => new ViewCell { View = this.CreateDisplayLabelFromSelectedMemberPath() });
+            }
+            else
+            {
+                // A custom item template is supplied
+                this.DropDownListView.ItemTemplate = this.ItemTemplate;
+            }
 
             // List properties
             this.DropDownListView.MinimumHeightRequest = this.RowHeight;
@@ -742,24 +704,17 @@ namespace HLI.Forms.Core.Controls
             this.DropDownGrid.Children.Add(this.DropDownListView);
         }
 
-        private void CreateDisplayTemplateFromMemberPath()
+        /// <summary>
+        ///     Creates a label that binds its text to <see cref="DisplayMemberPath" />
+        /// </summary>
+        /// <returns>The <see cref="Label"/> or <c>null</c> if binding was not possible</returns>
+        private Label CreateDisplayLabelFromSelectedMemberPath()
         {
+            if (string.IsNullOrWhiteSpace(this.DisplayMemberPath)) return null;
+
             var displayLabel = new Label { Margin = 4 };
-            displayLabel.SetBinding(Label.TextProperty, new Binding(this.SelectedMemberPath));
-            displayLabel.SetBinding<HliComboBox>(BindingContextProperty, view => view.SelectedItem);
-            this.SelectedItemTemplate = new DataTemplate(() => displayLabel);
-        }
-
-        private void CreateItemTemplateFromDisplayMemberPath()
-        {
-            if (this.ItemView != null)
-            {
-                return;
-            }
-
-            var label = new Label();
-            label.SetBinding(Label.TextProperty, this.DisplayMemberPath);
-            this.ItemTemplate = new DataTemplate(() => new ViewCell { View = label });
+            displayLabel.SetBinding(Label.TextProperty, this.DisplayMemberPath);
+            return displayLabel;
         }
 
         private void CreatePlaceholder()
@@ -769,6 +724,18 @@ namespace HLI.Forms.Core.Controls
             contentLabel.AddTapGestureRecognizer(this.OnSelectedItemTapped);
             this.SelectedUserContentGrid.Children.Clear();
             this.SelectedUserContentGrid.Children.Add(contentLabel);
+        }
+
+        private void CreateSelectedItemTemplateFromDisplayMemberPath()
+        {
+            if (this.ItemView != null) return;
+
+            var label = this.CreateDisplayLabelFromSelectedMemberPath();
+            if (label == null) return;
+
+            // Bind the label to selected item model
+            label.SetBinding(BindingContextProperty, nameof(this.SelectedItem));
+            this.ItemTemplate = new DataTemplate(() => new ViewCell { View = label });
         }
 
         /// <summary>

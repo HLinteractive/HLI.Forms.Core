@@ -207,7 +207,7 @@ namespace HLI.Forms.Core.Controls
                 this.CloseCommand?.Execute(null);
             }
         }
-
+        
         private static void OnIsSelectedItemVisibleChanged(BindableObject bindable, object oldValue, object newValue)
         {
             if (oldValue == newValue || newValue == null || newValue is bool == false)

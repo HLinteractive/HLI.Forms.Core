@@ -162,9 +162,6 @@
     <PackageReference Include="HLI.Core">
       <Version>1.0.6</Version>
     </PackageReference>
-    <PackageReference Include="HLI.Forms.Core">
-      <Version>1.0.1</Version>
-    </PackageReference>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.0.1</Version>
     </PackageReference>
