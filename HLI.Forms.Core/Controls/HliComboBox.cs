@@ -196,7 +196,7 @@ namespace HLI.Forms.Core.Controls
                                                            };
 
         /// <summary>
-        ///     Inner grid for selected item, with <see cref="SelectedItemTemplate" /> as child when <see cref="CreateChildren" />
+        ///     Inner grid for selected item, with <see cref="SelectedItemTemplate" /> as child when <see cref="CreateSelectedItemAndDropdown" />
         ///     has been called.
         /// </summary>
         protected readonly Grid SelectedUserContentGrid = new Grid();
@@ -351,7 +351,11 @@ namespace HLI.Forms.Core.Controls
         }
 
         /// <summary>
-        ///     A <see cref="ListView.ItemTemplate" />; expects a <see cref="DataTemplate" /> containing a <see cref="Cell" />
+        ///     <para>
+        ///         A <see cref="ListView.ItemTemplate" />; expects a <see cref="DataTemplate" /> containing a
+        ///         <see cref="Cell" /> like <see cref="ViewCell" />.
+        ///     </para>
+        ///     <para>Can be set using <see cref="ItemView" /></para>
         /// </summary>
         /// <seealso cref="ItemsSource" />
         public DataTemplate ItemTemplate
@@ -365,7 +369,7 @@ namespace HLI.Forms.Core.Controls
         ///     Gets or sets the <see cref="View" /> that will be displayed as <see cref="ItemTemplate" /> and
         ///     <see cref="SelectedItemTemplate" />
         /// </summary>
-        public View ItemView
+        private View ItemView
         {
             get => this.itemView;
 
@@ -374,8 +378,13 @@ namespace HLI.Forms.Core.Controls
                 if (this.itemView == value || value == null) return;
 
                 this.itemView = value;
-                var template = value.DeepClone() as View;
-                if (template != null) this.ItemTemplate = new DataTemplate(() => new ViewCell { View = template });
+
+                // Template will be called when ListView is rendered
+                this.ItemTemplate = new DataTemplate(() =>
+                    {
+                        var cellContent = this.itemView.DeepClone() as ContentView;
+                        return new ViewCell { View = cellContent ?? this.itemView };
+                    });
             }
         }
 
@@ -430,8 +439,9 @@ namespace HLI.Forms.Core.Controls
         }
 
         /// <summary>
-        ///     Template for the "selected" area. BindingContext is <see cref="SelectedItem" />. By default set to a
-        ///     <see cref="Label" /> bound to <see cref="SelectedMemberPath" />. Bindable property.
+        ///     <para>Template for the "selected" area. BindingContext is <see cref="SelectedItem" />. </para>
+        /// <para>By default set to a
+        ///     <see cref="Label" /> bound to <see cref="SelectedMemberPath" />. Bindable property.</para>
         /// </summary>
         public DataTemplate SelectedItemTemplate
         {
@@ -507,7 +517,7 @@ namespace HLI.Forms.Core.Controls
         protected virtual void OnPlaceholderChanged()
         {
             this.CreatePlaceholder();
-            this.CreateChildren();
+            this.CreateSelectedItemAndDropdown();
         }
 
         /// <summary>
@@ -566,14 +576,14 @@ namespace HLI.Forms.Core.Controls
         {
             if (oldValue == newValue || string.IsNullOrWhiteSpace(newValue?.ToString())) return;
 
-            bindable.AsType<HliComboBox>().CloseButton.Text = newValue.ToString();
+            bindable.AsType<HliComboBox>().CloseButton.Text = newValue?.ToString();
         }
 
         private static void OnDisplayMemberPathChanged(BindableObject bindable, object oldValue, object newValue)
         {
             if (oldValue == newValue || string.IsNullOrWhiteSpace(newValue?.ToString())) return;
 
-            bindable.AsType<HliComboBox>().CreateChildren();
+            bindable.AsType<HliComboBox>().CreateSelectedItemAndDropdown();
         }
 
         private static void OnHasContentBorderChanged(BindableObject bindable, object oldValue, object newValue)
@@ -591,7 +601,7 @@ namespace HLI.Forms.Core.Controls
         {
             if (oldValue == newValue || newValue == null || newValue is bool == false) return;
 
-            bindable.AsType<HliComboBox>().CreateChildren();
+            bindable.AsType<HliComboBox>().CreateSelectedItemAndDropdown();
         }
 
         private static void OnIsDropdownVisibleChanged(BindableObject bindable, object oldValue, object newValue)
@@ -605,7 +615,7 @@ namespace HLI.Forms.Core.Controls
         {
             if (oldValue == newValue || newValue == null || newValue is IEnumerable == false) return;
 
-            bindable.AsType<HliComboBox>().CreateChildren();
+            bindable.AsType<HliComboBox>().CreateSelectedItemAndDropdown();
         }
 
         private static void OnItemTemplateChanged(BindableObject bindable, object oldValue, object newValue)
@@ -614,7 +624,7 @@ namespace HLI.Forms.Core.Controls
 
             var comboBox = bindable.AsType<HliComboBox>();
             comboBox.ItemTemplate = (DataTemplate)newValue;
-            comboBox.CreateChildren();
+            comboBox.CreateSelectedItemAndDropdown();
         }
 
         private static void OnPlaceholderChanged(BindableObject bindable, object oldValue, object newValue)
@@ -629,7 +639,7 @@ namespace HLI.Forms.Core.Controls
         {
             if (oldValue == newValue || newValue == null || newValue is double == false) return;
 
-            bindable.AsType<HliComboBox>().CreateChildren();
+            bindable.AsType<HliComboBox>().CreateSelectedItemAndDropdown();
         }
 
         /// <summary>
@@ -656,13 +666,13 @@ namespace HLI.Forms.Core.Controls
 
             var hliComboBox = bindable.AsType<HliComboBox>();
             hliComboBox.CreateSelectedItemTemplateFromDisplayMemberPath();
-            hliComboBox.CreateChildren();
+            hliComboBox.CreateSelectedItemAndDropdown();
         }
 
         /// <summary>
-        ///     Populates this children of this control
+        ///    Creates selected item and <see cref="DropDownListView"/>
         /// </summary>
-        private void CreateChildren()
+        private void CreateSelectedItemAndDropdown()
         {
             if (this.ItemsSource == null) return;
 
@@ -707,7 +717,7 @@ namespace HLI.Forms.Core.Controls
         /// <summary>
         ///     Creates a label that binds its text to <see cref="DisplayMemberPath" />
         /// </summary>
-        /// <returns>The <see cref="Label"/> or <c>null</c> if binding was not possible</returns>
+        /// <returns>The <see cref="Label" /> or <c>null</c> if binding was not possible</returns>
         private Label CreateDisplayLabelFromSelectedMemberPath()
         {
             if (string.IsNullOrWhiteSpace(this.DisplayMemberPath)) return null;

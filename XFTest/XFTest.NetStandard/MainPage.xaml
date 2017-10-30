@@ -7,7 +7,8 @@
     xmlns:behaviors="clr-namespace:HLI.Forms.Core.Behaviors;assembly=HLI.Forms.Core"
     xmlns:hli="clr-namespace:HLI.Forms.Core.Controls;assembly=HLI.Forms.Core"
     xmlns:local="clr-namespace:XFTest.NetStandard">
-    <ContentPage Title="HliRefreshableView">
+
+    <ContentPage Title="RefreshableView" Style="{StaticResource ContentPageTabbedStyle}">
         <ContentPage.BindingContext>
             <local:MainViewModel />
         </ContentPage.BindingContext>
@@ -20,7 +21,8 @@
             <Switch behaviors:ViewBehaviors.IsAnimated="True" IsToggled="{Binding IsBusy, Mode=TwoWay}" />
 
             <Label FontAttributes="Bold" Text="HliRefreshableView" />
-            <hli:HliRefreshableView IsBusyMemberPath="IsBusy">
+            <!--  ReSharper disable once UnusedMember.Global x:Name required for iOS to find HLI.Forms.Core  -->
+            <hli:HliRefreshableView x:Name="RefreshViewNews" IsBusyMemberPath="IsBusy">
                 <StackLayout>
                     <Label FontAttributes="Bold" Text="Latest news" />
                     <ScrollView Orientation="Vertical">
@@ -33,7 +35,8 @@
             </hli:HliRefreshableView>
         </StackLayout>
     </ContentPage>
-    <ContentPage Title="HLiBarChart">
+
+    <ContentPage Title="BarChart" Style="{StaticResource ContentPageTabbedStyle}">
         <ContentPage.BindingContext>
             <local:MainViewModel />
         </ContentPage.BindingContext>
@@ -48,7 +51,8 @@
                 ValuePath="Moons" />
         </StackLayout>
     </ContentPage>
-    <ContentPage Title="HLiBindablePicker">
+
+    <ContentPage Title="BindablePicker" Style="{StaticResource ContentPageTabbedStyle}">
         <ContentPage.BindingContext>
             <local:MainViewModel />
         </ContentPage.BindingContext>
@@ -59,6 +63,7 @@
                 DisplayMemberpath="Name"
                 ItemsSource="{Binding Models}"
                 SelectedItem="{Binding SelectedItem, Mode=TwoWay}" />
+
             <Label FontAttributes="Bold" Text="SelectedItem.Image" />
             <Image
                 HeightRequest="200"
@@ -70,7 +75,8 @@
             <Label Text="{Binding SelectedItem.Fauna}" />
         </StackLayout>
     </ContentPage>
-    <ContentPage Title="HLiComboBox">
+
+    <ContentPage Title="ComboBox" Style="{StaticResource ContentPageTabbedStyle}">
         <ContentPage.BindingContext>
             <local:MainViewModel />
         </ContentPage.BindingContext>
@@ -78,24 +84,39 @@
         <StackLayout>
             <Label FontAttributes="Bold" Text="SelectedItem" />
             <hli:HliComboBox
-                DisplayMemberPath="Name"
                 ItemsSource="{Binding Models}"
                 Placeholder="Pick a planet!"
                 RowHeight="50"
                 SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
-                <hli:HliComboBox.ItemView>
-                    <StackLayout
-                        x:Key="PlanetTemplate"
-                        Margin="0,5,0,0"
-                        Orientation="Horizontal">
-                        <Image
-                            HeightRequest="20"
-                            Source="{Binding Thumbnail}"
-                            WidthRequest="20" />
-                        <Label Margin="5,0,0,0" Text="{Binding Name}" />
-                    </StackLayout>
-                </hli:HliComboBox.ItemView>
+                <hli:HliComboBox.SelectedItemTemplate>
+                    <DataTemplate>
+                        <Label FontAttributes="Bold" Text="{Binding SelectedItem.Name}" />
+                    </DataTemplate>
+                </hli:HliComboBox.SelectedItemTemplate>
+                <hli:HliComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <Grid x:Key="PlanetTemplate">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+                                <Image
+                                    Margin="0"
+                                    HeightRequest="12"
+                                    Source="{Binding Thumbnail}"
+                                    WidthRequest="12" />
+                                <Label
+                                    Grid.Column="1"
+                                    Margin="10,0,0,0"
+                                    HorizontalTextAlignment="Start"
+                                    Text="{Binding Name}" />
+                            </Grid>
+                        </ViewCell>
+                    </DataTemplate>
+                </hli:HliComboBox.ItemTemplate>
             </hli:HliComboBox>
+
             <Label FontAttributes="Bold" Text="SelectedItem.Image" />
             <Image
                 HeightRequest="200"
@@ -108,7 +129,7 @@
         </StackLayout>
     </ContentPage>
 
-    <ContentPage Title="HLiModalView">
+    <ContentPage Title="ModalView" Style="{StaticResource ContentPageTabbedStyle}">
         <hli:HliPlaceholderView>
             <hli:HliPlaceholderView.CloseView>
                 <StackLayout Orientation="Horizontal">

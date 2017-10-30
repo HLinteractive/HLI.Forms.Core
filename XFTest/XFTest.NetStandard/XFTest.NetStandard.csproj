@@ -47,13 +47,12 @@
     <PackageReference Include="System.Linq.Queryable" Version="4.3.0" />
     <PackageReference Include="Xamarin.Forms" Version="2.4.0.18342" />
   </ItemGroup>
-  <!--<ItemGroup>
-    <PackageReference Include="NETStandard.Library" Condition="'$(TargetFramework)' != 'net45'" Version="1.6.1" />
-  </ItemGroup>-->
-
   <ItemGroup>
     <ProjectReference Include="..\..\HLI.Forms.Core\HLI.Forms.Core.csproj" />
   </ItemGroup>
+  <!--<ItemGroup>
+    <PackageReference Include="NETStandard.Library" Condition="'$(TargetFramework)' != 'net45'" Version="1.6.1" />
+  </ItemGroup>-->
 
   <ItemGroup>
     <Compile Update="App.xaml.cs">

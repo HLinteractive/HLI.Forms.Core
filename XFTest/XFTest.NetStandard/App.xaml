@@ -4,10 +4,18 @@
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
     <Application.Resources>
-
-        <!--  Application resource dictionary  -->
         <ResourceDictionary>
             <ImageSourceConverter x:Key="ImageSourceConverter" />
+            <Thickness
+                x:Key="PagePadding"
+                Bottom="10"
+                Left="10"
+                Right="10"
+                Top="20" />
+            <Style x:Key="ContentPageTabbedStyle" TargetType="ContentPage">
+                <Setter Property="Padding" Value="{StaticResource PagePadding}" />
+                <Setter Property="Icon" Value="Icon-Small" />
+            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>
