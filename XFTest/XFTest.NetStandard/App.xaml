@@ -14,7 +14,15 @@
                 Top="20" />
             <Style x:Key="ContentPageTabbedStyle" TargetType="ContentPage">
                 <Setter Property="Padding" Value="{StaticResource PagePadding}" />
-                <Setter Property="Icon" Value="Icon-Small" />
+                <Setter Property="Icon">
+                    <Setter.Value>
+                        <OnPlatform x:TypeArguments="FileImageSource">
+                            <On Platform="iOS">Search</On>
+                            <On Platform="Android" />
+                            <On Platform="Windows">Search</On>
+                        </OnPlatform>
+                    </Setter.Value>
+                </Setter>
             </Style>
         </ResourceDictionary>
     </Application.Resources>

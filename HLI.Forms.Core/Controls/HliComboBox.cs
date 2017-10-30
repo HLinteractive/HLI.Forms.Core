@@ -598,6 +598,7 @@ namespace HLI.Forms.Core.Controls
         }
 
         private static void OnHasDropDownArrowChanged(BindableObject bindable, object oldValue, object newValue)
+              
         {
             if (oldValue == newValue || newValue == null || newValue is bool == false) return;
 

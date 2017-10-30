@@ -90,7 +90,7 @@
                 SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
                 <hli:HliComboBox.SelectedItemTemplate>
                     <DataTemplate>
-                        <Label FontAttributes="Bold" Text="{Binding SelectedItem.Name}" />
+                        <Label FontAttributes="Bold" Text="{Binding Name}" />
                     </DataTemplate>
                 </hli:HliComboBox.SelectedItemTemplate>
                 <hli:HliComboBox.ItemTemplate>
